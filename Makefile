@@ -70,20 +70,18 @@ IFLAGS_BONUS		= -I${INCLUDES_BONUS_DIR}
 
 SRC 				= ${SRC_DIR}/main.c
 
-
-
-
-
+LBA 				= ${LIBASM_DIR}/ft_strlen.s \
+					  ${LIBASM_DIR}/ft_strcpy.s \
+					  ${LIBASM_DIR}/ft_strcmp.s \
+					  ${LIBASM_DIR}/ft_write.s \
+					  ${LIBASM_DIR}/ft_read.s \
+					  ${LIBASM_DIR}/ft_strdup.s
 
 
 
 
 OBJ_SRC				= $(patsubst ${SRC_DIR}/%.c, ${OBJ_DIR}/%.o, ${SRC})
-OBJ_ERR				= $(patsubst ${ERRORS_DIR}/%.c, ${OBJ_DIR}/%.o, ${ERR})
-OBJ_INT				= $(patsubst ${INIT_DIR}/%.c, ${OBJ_DIR}/%.o, ${INT})
-OBJ_MOV				= $(patsubst ${MOVES_DIR}/%.c, ${OBJ_DIR}/%.o, ${MOV})
-OBJ_SRT				= $(patsubst ${SORTS_DIR}/%.c, ${OBJ_DIR}/%.o, ${SRT})
-OBJ_UTL				= $(patsubst ${UTILS_DIR}/%.c, ${OBJ_DIR}/%.o, ${UTL})
+OBJ_LBA				= $(patsubst ${LIBASM_DIR}/%.s, ${OBJ_DIR}/%.o, ${LBA})
 
 # ══ Sources Bonus ═══════════════════════════════════════════════════════════ #
 #    -------------                                                             #
@@ -102,7 +100,7 @@ OBJ_GNL_BONUS		= $(patsubst ${GNL_BONUS_DIR}/%.c, ${OBJ_DIR}/%.o, \
 
 all: ${NAME}
 
-${NAME}: ftlibft ftprintf ftexamft ${OBJ_SRC} ${OBJ_ERR} ${OBJ_INT} \
+${NAME}: ${OBJ_SRC} ${OBJ_ERR} ${OBJ_INT} \
 									${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL}
 	@echo "$(YELLOW)Compiling root ...$(DEF_COLOR)"
 	@${CC} ${CFLAGS} ${IFLAGS} -o ${NAME} ${OBJ_SRC} ${OBJ_ERR} ${OBJ_INT} \
@@ -117,36 +115,14 @@ ${OBJ_DIR}/%.o: ${ERRORS_DIR}/%.c
 	@${MKD} $(dir $@)
 	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
 
-${OBJ_DIR}/%.o: ${INIT_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
-${OBJ_DIR}/%.o: ${MOVES_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
-${OBJ_DIR}/%.o: ${SORTS_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
-${OBJ_DIR}/%.o: ${UTILS_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
-ftlibft:
-	@cd ${LIBFT_DIR} ${MK_} all
-
-ftprintf:
-	@cd ${PRINTFT_DIR} ${MK_} all
-
-ftexamft:
-	@cd ${EXAMFT_DIR} ${MK_} all
+# ══ Rules Bonus══════════════════════════════════════════════════════════════ #
+#    -----------                                                               #
 
 bonus: ${NAME_BONUS}
 
-${NAME_BONUS}: ftlibft ftprintf ftexamft ${OBJ_ERR} ${OBJ_INT} \
-											${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL} \
-											${OBJ_SRC_BONUS} ${OBJ_GNL_BONUS}
+${NAME_BONUS}: ${OBJ_ERR} ${OBJ_INT} \
+					${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL} \
+					${OBJ_SRC_BONUS} ${OBJ_GNL_BONUS}
 	@echo "$(YELLOW)Compiling root ...$(DEF_COLOR)"
 	@${CC} ${CFLAGS} ${IFLAGS} ${IFLAGS_BONUS} -o ${NAME_BONUS} \
 			${OBJ_ERR} ${OBJ_INT} ${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL} \
@@ -157,16 +133,10 @@ ${OBJ_DIR}/%.o: ${SRC_BONUS_DIR}/%.c
 	@${MKD} $(dir $@)
 	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
 
-${OBJ_DIR}/%.o: ${GNL_BONUS_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
 
 clean:
 	@echo "$(YELLOW)Removing object files ...$(DEF_COLOR)"
 
-	@cd ${LIBFT_DIR} ${MK_} clean
-	@cd ${PRINTFT_DIR} ${MK_} clean
-	@cd ${EXAMFT_DIR} ${MK_} clean
 	@$(RM) ${OBJ_DIR}/*.o
 
 	@echo "$(RED)Object files removed $(DEF_COLOR)"
@@ -174,13 +144,10 @@ clean:
 fclean:	clean
 	@echo "$(YELLOW)Removing binaries ...$(DEF_COLOR)"
 
-	@cd ${LIBFT_DIR} ${MK_} fclean
-	@cd ${PRINTFT_DIR} ${MK_} fclean
-	@cd ${EXAMFT_DIR} ${MK_} fclean
 	@${RM} ${NAME} ${NAME_BONUS}
 
 	@echo "$(RED)Binaries removed $(DEF_COLOR)"
 
 re:	fclean all
 
-.PHONY : all ftlibft ftprintf ftexamft clean fclean bonus re
+.PHONY : all clean fclean bonus re

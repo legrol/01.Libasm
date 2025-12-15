@@ -25,11 +25,17 @@ void	ft_strlen_test()
 
 void	ft_strcpy_test()
 {
+	char dst[64];
+
     printf("========================\n");
 	printf("ft_strcpy test\n");
 	printf("========================\n");
-
-
+    printf("MyFunction = %s\n", ft_strcpy(dst, "Hades"));
+	printf("RealFunction = %s\n", strcpy(dst, "Hades"));
+	printf("MyFunction = %s\n", ft_strcpy(dst, "Up2You"));
+	printf("RealFunction = %s\n", strcpy(dst, "Up2You"));
+	printf("MyFunction = %s\n", ft_strcpy(dst, ""));
+	printf("RealFunction = %s\n", strcpy(dst, ""));
 }
 
 int	main(int argc, char **argv)

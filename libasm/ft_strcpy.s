@@ -19,23 +19,21 @@
 ;***************************************************
 
 section .text
-    global ft_strcpy.s 
+    global ft_strcpy
 
-ft_strcpy
+ft_strcpy:
     mov rax, 0
     jmp .loop
 
     .loop:
+        mov al, BYTE [rsi + rax]
+        mov BYTE [rdi + rax], al
+        test al, al
+        jne .increment
         
-
-
+        mov rax, rdi
+        ret
 
     .increment:
         inc rax
         jmp .loop
-
-    .endloop:
-
-        ret
-
-
