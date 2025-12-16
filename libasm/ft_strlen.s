@@ -44,21 +44,20 @@
 ;***************************************************
 
 section .text
-	global ft_strlen
+	global ft_strlen			; make ft_strlen visible to the linker
 
 ft_strlen:
-	mov rax, 0
-	jmp .loop
+	mov rax, 0					; initialize length counter i = 0
+	jmp .loop					; jump to the loop condition
 
 	.loop:
-		cmp BYTE [rdi + rax], 0
-		jne .increment
-		jmp .endloop
+		cmp BYTE [rdi + rax], 0	; compare s[i] with '\0'
+		jne .increment			; if not null, continue counting
+		jmp .endloop			; if null, end the loop
 
 	.increment:
-		inc rax
-		jmp .loop
+		inc rax					; increment the length counter i++
+		jmp .loop				; repeat the loop
 
 	.endloop:
-		ret
-
+		ret						; return the length in rax

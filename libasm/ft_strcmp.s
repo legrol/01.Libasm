@@ -53,30 +53,30 @@
 ;***************************************************
 
 section .text
-	global ft_strcmp
+	global ft_strcmp					; make ft_strcmp visible to the linker
 
 ft_strcmp:
-	mov rax, 0
-	jmp .loop
+	mov rax, 0							; initialize index i = 0
+	jmp .loop							; jump into the loop
 
 	.loop:
-		movzx edx, BYTE [rsi + rax]
-		movzx ecx, BYTE [rdi + rax]
-		cmp ecx, 0
-		jne .check_diff
-		jmp .return
+		movzx edx, BYTE [rsi + rax]		; load s2[i] into edx
+		movzx ecx, BYTE [rdi + rax]		; load s1[i] into ecx
+		cmp ecx, 0						; check if s1[i] is '\0'
+		jne .check_diff					; if not null, check difference
+		jmp .return						; if null, return difference
 
 	.check_diff:
-		cmp edx, ecx
-		jne .return
-		jmp .increment
+		cmp edx, ecx					; compare s2[i] and s1[i]
+		jne .return						; if different, return difference
+		jmp .increment					; if equal, increment index
 
 	.increment:
-		inc rax
-		jmp .loop
+		inc rax							; increment index i++
+		jmp .loop						; repeat the loop
 
 	.return:
-		sub ecx, edx
-		mov eax, ecx
-		ret
+		sub ecx, edx					; compute (s1[i] - s2[i])
+		mov eax, ecx					; move the result to eax
+		ret								; return the result
 

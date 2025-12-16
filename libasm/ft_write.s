@@ -44,17 +44,30 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***************************************************
+;***************************************************************
 ;			type		size		name	register 
-; argument	int			4(int)		fd		edi	
+; argument	int			4(int)		fd		edi	(passed in rdi)
 ; argument	void*		8(ptr)		buf		rsi	
 ; argument	size_t		8(long)		count	rdx	
 ; syscall	write		number		1		rax	
-;***************************************************
+;***************************************************************
 
 section .text
-	global ft_write
+	global ft_write			; make ft_write visible to the linker
+	extern __errno_location	; external libc function to access errno
 
 ft_write:
+	mov rax, 1				; syscall number for write (SYS_write)
+	syscall					; Enter kernel mode and execute write
 	
+	cmp rax, 0				; check syscall return value
+	jl .error				; jump if rax < 0 (syscall error, rax = -errno)
+	ret						; return number of bytes written (rax >= 0)
 
+.error:
+	neg rax					; convert -errno to positive errno value
+	mov rdi, rax			; store errno (rax) value in rdi
+	call __errno_location	; get pointer to thread-local errno
+	mov [rax], rdi			; set errno = error code
+	mov rax, -1				; return -1 to signal error
+	ret						; return to caller

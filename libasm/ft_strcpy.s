@@ -50,22 +50,22 @@
 ;***************************************************
 
 section .text
-	global ft_strcpy
+	global ft_strcpy				; make ft_strcpy visible to the linker
 
 ft_strcpy:
-	mov rax, 0
-	jmp .loop
+	mov rax, 0						; initialize index i = 0
+	jmp .loop						; jump to the loop
 
 	.loop:
-		mov al, BYTE [rsi + rax]
-		mov BYTE [rdi + rax], al
-		test al, al
-		jne .increment
+		mov al, BYTE [rsi + rax]	; load src[i] into al
+		mov BYTE [rdi + rax], al	; store al into dst[i]
+		test al, al					; test if al is '\0'
+		jne .increment				; if not null, increment index
 
-		mov rax, rdi
-		ret
+		mov rax, rdi				; if null, set return value to dst
+		ret							; return dst
 
 	.increment:
-		inc rax
-		jmp .loop
+		inc rax						; increment index i++
+		jmp .loop					; repeat the loop
 
