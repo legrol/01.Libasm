@@ -1,14 +1,39 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    ft_strlen.s                                        :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/12/13 16:03:36 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/13 16:03:36 by rdel-olm         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+; **************************************************************************** ;
+;                                                                              ;
+;                                                         :::      ::::::::    ;
+;    ft_strlen.s                                        :+:      :+:    :+:    ;
+;                                                     +:+ +:+         +:+      ;
+;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         ;
+;                                                 +#+#+#+#+#+   +#+            ;
+;    Created: 2025/12/13 16:03:36 by rdel-olm          #+#    #+#              ;
+;    Updated: 2025/12/13 16:03:36 by rdel-olm         ###   ########.fr        ;
+;                                                                              ;
+; **************************************************************************** ;
+
+; ****************************************************************************
+;                                                                             
+;   size_t ft_strlen(const char *s);                                          
+;                                                                             
+;   Computes the length of the string s, excluding the null terminator.       
+;                                                                             
+;   - Iterates through the string until the null terminator ('\0') is found.  
+;   - Counts the number of characters before '\0'.                            
+;                                                                             
+;   Return value:                                                             
+;     The number of characters in the string.                                 
+;                                                                             
+;   C equivalent:                                                             
+;                                                                             
+;   size_t ft_strlen(const char *s)                                           
+;   {                                                                         
+;       size_t len = 0;                                                       
+;                                                                             
+;       while (s[len] != '\0')                                                
+;           len++;                                                            
+;       return len;                                                           
+;   }                                                                         
+;                                                                             
+; ****************************************************************************
 
 ;***************************************************
 ;	size_t	ft_strlen(const char *s);
@@ -19,20 +44,21 @@
 ;***************************************************
 
 section .text
-    global ft_strlen
+	global ft_strlen
 
 ft_strlen:
-    mov rax, 0
-    jmp .loop
+	mov rax, 0
+	jmp .loop
 
-    .loop:
-        cmp BYTE [rdi + rax], 0
-        jne .increment
-        jmp .endloop
+	.loop:
+		cmp BYTE [rdi + rax], 0
+		jne .increment
+		jmp .endloop
 
-    .increment:
-        inc rax
-        jmp .loop
+	.increment:
+		inc rax
+		jmp .loop
 
-    .endloop:
-        ret
+	.endloop:
+		ret
+

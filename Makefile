@@ -1,153 +1,69 @@
-# ══ Names ═══════════════════════════════════════════════════════════════════ #
-#    -----                                                                     #
+# ══ Names & Directories ═════════════════════════════════════════════════════
+NAME 		= libasm.out
+OBJ_DIR		= obj
+SRC_DIR		= src
+INC_DIR		= includes
+LIBASM_DIR	= libasm
 
-NAME 				= libasm
+# ══ Colors ══════════════════════════════════════════════════════════════════
+YELLOW 		= \033[0;93m
+GREEN 		= \033[0;92m
+RED 		= \033[0;91m
+CYAN 		= \033[0;96m
+DEF_COLOR 	= \033[0;39m
 
-# ══ Colors ══════════════════════════════════════════════════════════════════ #
-#    ------                                                                    #
+# ══ Compiler & Flags ════════════════════════════════════════════════════════
+CC 			= gcc
+NASM 		= C:/Users/Usuario/AppData/Local/bin/NASM/nasm.exe
+RM 			= rm -f
+MKD			= mkdir -p
+CFLAGS 		= -Wall -Werror -Wextra
+IFLAGS		= -I$(INC_DIR)
+NASMFLAGS	= -f win64
 
-DEL_LINE 			= \033[2K
-ITALIC 				= \033[3m
-BOLD 				= \033[1m
-DEF_COLOR 			= \033[0;39m
-GRAY 				= \033[0;90m
-RED 				= \033[0;91m
-GREEN 				= \033[0;92m
-YELLOW 				= \033[0;93m
-BLUE 				= \033[0;94m
-MAGENTA 			= \033[0;95m
-CYAN 				= \033[0;96m
-WHITE 				= \033[0;97m
-BLACK 				= \033[0;99m
-ORANGE 				= \033[38;5;209m
-BROWN 				= \033[38;2;184;143;29m
-DARK_GRAY 			= \033[38;5;234m
-MID_GRAY 			= \033[38;5;245m
-DARK_GREEN 			= \033[38;2;75;179;82m
-DARK_YELLOW 		= \033[38;5;143m
+# ══ Sources ═════════════════════════════════════════════════════════════════
+SRC 		= $(SRC_DIR)/main.c
 
-# ══ Compilation══════════════════════════════════════════════════════════════ #
-#    -----------                                                               #
+ASM_SRC 	= $(LIBASM_DIR)/ft_strlen.s \
+			  $(LIBASM_DIR)/ft_strcpy.s \
+			  $(LIBASM_DIR)/ft_strcmp.s \
+			  $(LIBASM_DIR)/ft_write.s \
+			  $(LIBASM_DIR)/ft_read.s \
+			  $(LIBASM_DIR)/ft_strdup.s
 
-CC 					= clang
-AR 					= ar rcs
-RM 					= rm -f
-MK 					= make -C
-MKD					= mkdir -p
-MCL 				= make clean -C
-MFCL 				= make fclean -C
-MK_					= && make
+# ══ Objects ═════════════════════════════════════════════════════════════════
+OBJ_SRC		= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+OBJ_ASM		= $(ASM_SRC:$(LIBASM_DIR)/%.s=$(OBJ_DIR)/%.o)
 
-# ══ Directories ═════════════════════════════════════════════════════════════ #
-#    -----------                                                               #
+# ══ Rules ═══════════════════════════════════════════════════════════════════
+all: $(NAME)
 
-LIBASM_DIR			= ./libasm
-OBJ_DIR				= ./obj 
-SRC_DIR				= ./src
-INC_DIR				= ./includes
-UTILS_DIR			= ./utils
+$(NAME): $(OBJ_SRC) $(OBJ_ASM)
+	@echo "$(YELLOW)Linking $(NAME)...$(DEF_COLOR)"
+	@$(CC) $(CFLAGS) $(IFLAGS) -o $(NAME) $(OBJ_SRC) $(OBJ_ASM)
+	@echo "$(GREEN)✓ $(NAME) created successfully!$(DEF_COLOR)"
 
-# ══ Bonus Directories ═══════════════════════════════════════════════════════ #
-#    -----------------                                                         #
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@echo "$(CYAN)Compiling $<...$(DEF_COLOR)"
+	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
-SRC_BONUS_DIR		= ./src_bonus
-INCLUDES_BONUS_DIR	= ./includes_bonus
+$(OBJ_DIR)/%.o: $(LIBASM_DIR)/%.s | $(OBJ_DIR)
+	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
+	@$(NASM) $(NASMFLAGS) $< -o $@
 
-# ══ Flags ═══════════════════════════════════════════════════════════════════ #
-#    -----                                                                     #
-
-CFLAGS 				= -Wall -Werror -Wextra
-IFLAGS				= -I${INCLUDES_DIR}
-
-# ══ Flags Bonus══════════════════════════════════════════════════════════════ #
-#    -----------                                                               #
-
-IFLAGS_BONUS		= -I${INCLUDES_BONUS_DIR}
-
-
-# ══ Sources ═════════════════════════════════════════════════════════════════ #
-#    -------                                                                   #
-
-SRC 				= ${SRC_DIR}/main.c
-
-LBA 				= ${LIBASM_DIR}/ft_strlen.s \
-					  ${LIBASM_DIR}/ft_strcpy.s \
-					  ${LIBASM_DIR}/ft_strcmp.s \
-					  ${LIBASM_DIR}/ft_write.s \
-					  ${LIBASM_DIR}/ft_read.s \
-					  ${LIBASM_DIR}/ft_strdup.s
-
-
-
-
-OBJ_SRC				= $(patsubst ${SRC_DIR}/%.c, ${OBJ_DIR}/%.o, ${SRC})
-OBJ_LBA				= $(patsubst ${LIBASM_DIR}/%.s, ${OBJ_DIR}/%.o, ${LBA})
-
-# ══ Sources Bonus ═══════════════════════════════════════════════════════════ #
-#    -------------                                                             #
-
-SRC_BONUS			= ${SRC_BONUS_DIR}/checker_bonus.c
-GNL_BONUS			= ${GNL_BONUS_DIR}/get_next_line_bonus.c \
-						${GNL_BONUS_DIR}/get_next_line_utils_bonus.c
-
-OBJ_SRC_BONUS		= $(patsubst ${SRC_BONUS_DIR}/%.c, ${OBJ_DIR}/%.o, \
-						${SRC_BONUS})
-OBJ_GNL_BONUS		= $(patsubst ${GNL_BONUS_DIR}/%.c, ${OBJ_DIR}/%.o, \
-						${GNL_BONUS})
-
-# ═══ Rules ══════════════════════════════════════════════════════════════════ #
-#     -----                                                                    #
-
-all: ${NAME}
-
-${NAME}: ${OBJ_SRC} ${OBJ_ERR} ${OBJ_INT} \
-									${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL}
-	@echo "$(YELLOW)Compiling root ...$(DEF_COLOR)"
-	@${CC} ${CFLAGS} ${IFLAGS} -o ${NAME} ${OBJ_SRC} ${OBJ_ERR} ${OBJ_INT} \
-									${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL} ${LFLAGS}
-	@echo "$(GREEN) $(NAME) all created ✓$(DEF_COLOR)"
-
-${OBJ_DIR}/%.o: ${SRC_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
-${OBJ_DIR}/%.o: ${ERRORS_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
-# ══ Rules Bonus══════════════════════════════════════════════════════════════ #
-#    -----------                                                               #
-
-bonus: ${NAME_BONUS}
-
-${NAME_BONUS}: ${OBJ_ERR} ${OBJ_INT} \
-					${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL} \
-					${OBJ_SRC_BONUS} ${OBJ_GNL_BONUS}
-	@echo "$(YELLOW)Compiling root ...$(DEF_COLOR)"
-	@${CC} ${CFLAGS} ${IFLAGS} ${IFLAGS_BONUS} -o ${NAME_BONUS} \
-			${OBJ_ERR} ${OBJ_INT} ${OBJ_MOV} ${OBJ_SRT} ${OBJ_UTL} \
-			${OBJ_SRC_BONUS} ${OBJ_GNL_BONUS} ${LFLAGS} ${IFLAGS_BONUS}
-	@echo "$(GREEN) $(NAME_BONUS) all created ✓$(DEF_COLOR)"
-
-${OBJ_DIR}/%.o: ${SRC_BONUS_DIR}/%.c
-	@${MKD} $(dir $@)
-	@$(CC) ${CFLAGS} ${IFLAGS} -c $< -o $@
-
+$(OBJ_DIR):
+	@$(MKD) $(OBJ_DIR)
 
 clean:
-	@echo "$(YELLOW)Removing object files ...$(DEF_COLOR)"
+	@echo "$(YELLOW)Removing object files...$(DEF_COLOR)"
+	@$(RM) -r $(OBJ_DIR)
+	@echo "$(RED)Object files removed$(DEF_COLOR)"
 
-	@$(RM) ${OBJ_DIR}/*.o
+fclean: clean
+	@echo "$(YELLOW)Removing binaries...$(DEF_COLOR)"
+	@$(RM) $(NAME)
+	@echo "$(RED)Binaries removed$(DEF_COLOR)"
 
-	@echo "$(RED)Object files removed $(DEF_COLOR)"
+re: fclean all
 
-fclean:	clean
-	@echo "$(YELLOW)Removing binaries ...$(DEF_COLOR)"
-
-	@${RM} ${NAME} ${NAME_BONUS}
-
-	@echo "$(RED)Binaries removed $(DEF_COLOR)"
-
-re:	fclean all
-
-.PHONY : all clean fclean bonus re
+.PHONY: all clean fclean re
