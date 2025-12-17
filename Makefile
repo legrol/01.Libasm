@@ -1,9 +1,10 @@
 # ══ Names & Directories ═════════════════════════════════════════════════════
-NAME 		= libasm.out
+NAME 		= libasm.a
 OBJ_DIR		= obj
 SRC_DIR		= src
 INC_DIR		= includes
 LIBASM_DIR	= libasm
+LIBASM_BONUS_DIR = libasm_bonus
 
 # ══ Colors ══════════════════════════════════════════════════════════════════
 YELLOW 		= \033[0;93m
@@ -31,16 +32,23 @@ ASM_SRC 	= $(LIBASM_DIR)/ft_strlen.s \
 			  $(LIBASM_DIR)/ft_read.s \
 			  $(LIBASM_DIR)/ft_strdup.s
 
+ASM_BONUS_SRC = $(LIBASM_BONUS_DIR)/ft_atoi_base.s \
+				$(LIBASM_BONUS_DIR)/ft_list_push_front.s \
+				$(LIBASM_BONUS_DIR)/ft_list_size.s \
+				$(LIBASM_BONUS_DIR)/ft_list_sort.s \
+				$(LIBASM_BONUS_DIR)/ft_list_remove_if.s
+
 # ══ Objects ═════════════════════════════════════════════════════════════════
 OBJ_SRC		= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 OBJ_ASM		= $(ASM_SRC:$(LIBASM_DIR)/%.s=$(OBJ_DIR)/%.o)
+OBJ_BONUS	= $(ASM_BONUS_SRC:$(LIBASM_BONUS_DIR)/%.s=$(OBJ_DIR)/%.o)
 
 # ══ Rules ═══════════════════════════════════════════════════════════════════
 all: $(NAME)
 
-$(NAME): $(OBJ_SRC) $(OBJ_ASM)
+$(NAME): $(OBJ_SRC) $(OBJ_ASM) $(OBJ_BONUS)
 	@echo "$(YELLOW)Linking $(NAME)...$(DEF_COLOR)"
-	@$(CC) $(CFLAGS) $(IFLAGS) -o $(NAME) $(OBJ_SRC) $(OBJ_ASM)
+	@$(CC) $(CFLAGS) $(IFLAGS) -o $(NAME) $(OBJ_SRC) $(OBJ_ASM) $(OBJ_BONUS)
 	@echo "$(GREEN)✓ $(NAME) created successfully!$(DEF_COLOR)"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -48,6 +56,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(LIBASM_DIR)/%.s | $(OBJ_DIR)
+	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
+	@$(NASM) $(NASMFLAGS) $< -o $@
+
+$(OBJ_DIR)/%.o: $(LIBASM_BONUS_DIR)/%.s | $(OBJ_DIR)
 	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
 	@$(NASM) $(NASMFLAGS) $< -o $@
 

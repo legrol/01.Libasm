@@ -22,7 +22,7 @@
 ;   - Copies the string including the null terminator using ft_strcpy.        
 ;   - Returns NULL if memory allocation fails.                                
 ;                                                                             
-;   Return value:                                                             
+;   Return value:                                                              
 ;     != NULL  -> pointer to newly allocated duplicated string                
 ;     NULL     -> allocation failed                                           
 ;                                                                             
