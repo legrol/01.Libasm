@@ -1,14 +1,14 @@
-; **************************************************************************** #
-;                                                                              #
-;                                                         :::      ::::::::    #
-;    ft_write.s                                         :+:      :+:    :+:    #
-;                                                     +:+ +:+         +:+      #
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         #
-;                                                 +#+#+#+#+#+   +#+            #
-;    Created: 2025/12/13 16:03:28 by rdel-olm          #+#    #+#              #
-;    Updated: 2025/12/13 16:03:28 by rdel-olm         ###   ########.fr        #
-;                                                                              #
-; **************************************************************************** #
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_write.s                                         :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/13 16:03:28 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:16:47 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -71,3 +71,13 @@ ft_write:
 	mov [rax], rdi			; set errno = error code
 	mov rax, -1				; return -1 to signal error
 	ret						; return to caller
+
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits

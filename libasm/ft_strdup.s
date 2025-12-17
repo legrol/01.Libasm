@@ -1,14 +1,14 @@
-; **************************************************************************** #
-;                                                                              #
-;                                                         :::      ::::::::    #
-;    ft_strdup.s                                        :+:      :+:    :+:    #
-;                                                     +:+ +:+         +:+      #
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         #
-;                                                 +#+#+#+#+#+   +#+            #
-;    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-;    Updated: 2025/12/16 21:51:23 by rdel-olm         ###   ########.fr        #
-;                                                                              #
-; **************************************************************************** #
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_strdup.s                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:15:56 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -51,29 +51,46 @@
 ;***************************************************************
 
 section .text
-	global ft_strdup		; make ft_strdup visible to the linker
-	extern malloc			; External libc function malloc
-	extern ft_strlen		; External function to compute string length
-	extern ft_strcpy		; External function to copy strings
+	global ft_strdup			; make ft_strdup visible to the linker
+	extern malloc				; External libc function malloc
+	extern ft_strlen			; External function to compute string length
+	extern ft_strcpy			; External function to copy strings
+
+section .text
+	global ft_strdup			; make ft_strdup visible to the linker
+	extern malloc				; External libc function malloc
+	extern ft_strlen			; External function to compute string length
+	extern ft_strcpy			; External function to copy strings
 
 ft_strdup:
-	push rdi				; save source string pointer on stack
-	sub rsp, 8				; align stack to 16 bytes
+	push rbx					; save rbx (callee-saved) and align stack
+	mov rbx, rdi				; save source string pointer in rbx
 
-	call ft_strlen			; compute length of source string (rax = len)	
-	inc rax					; add 1 byte (len + 1) for null terminator
-	mov rdi, rax			; first argument to malloc: size = len + 1
-	call malloc				; allocate memory, return pointer in rax
-	test rax, rax			; check if malloc returned NULL
-	je .alloc_fail			; if allocation failed, jump to error handling
+	call ft_strlen				; compute length of source string (rax = len)
+	inc rax						; add 1 byte (len + 1) for null terminator
+	mov rdi, rax				; first argument to malloc: size = len + 1
+	call malloc					; allocate memory, return pointer in rax
+	test rax, rax				; check if malloc returned NULL
+	je .alloc_fail				; if allocation failed, jump to error handling
 
-	mov rdi, rax			; set destination pointer (dst) for ft_strcpy
-	pop rsi					; restore source pointer into rsi
-	add rsp, 8				; restore stack alignment	
-	call ft_strcpy			; copy source string to destination	
-	ret						; return destination pointer (rax)
+	mov rdi, rax				; set destination pointer (dst) for ft_strcpy
+	mov rsi, rbx				; restore source pointer from rbx
+	call ft_strcpy				; copy source string to destination
+	
+	pop rbx						; restore rbx
+	ret							; return destination pointer (rax)
 
-.alloc_fail:
-	add rsp, 16				; clean stack (push rdi + sub rsp, 8) (8 bytes + 8 bytes)
-	xor rax, rax			; return NULL (rax = 0)
-	ret						; return to caller
+	.alloc_fail:
+		pop rbx					; restore rbx
+		xor rax, rax			; return NULL (rax = 0)
+		ret						; return to caller
+
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits

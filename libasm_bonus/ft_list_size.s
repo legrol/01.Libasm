@@ -1,14 +1,14 @@
-; **************************************************************************** ;
-;                                                                              ;
-;                                                         :::      ::::::::    ;
-;    ft_list_size.s                                     :+:      :+:    :+:    ;
-;                                                     +:+ +:+         +:+      ;
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         ;
-;                                                 +#+#+#+#+#+   +#+            ;
-;    Created: 2025/12/17 11:26:57 by rdel-olm          #+#    #+#              ;
-;    Updated: 2025/12/17 11:26:57 by rdel-olm         ###   ########.fr        ;
-;                                                                              ;
-; **************************************************************************** ;
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_list_size.s                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/17 11:26:57 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:16:51 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -89,3 +89,13 @@ ft_list_size:
 
 	.done:
 		ret									; return count in eax
+
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits

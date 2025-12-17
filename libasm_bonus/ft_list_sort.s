@@ -1,14 +1,14 @@
-; **************************************************************************** ;
-;                                                                              ;
-;                                                         :::      ::::::::    ;
-;    ft_list_sort.s                                     :+:      :+:    :+:    ;
-;                                                     +:+ +:+         +:+      ;
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         ;
-;                                                 +#+#+#+#+#+   +#+            ;
-;    Created: 2025/12/17 11:27:00 by rdel-olm          #+#    #+#              ;
-;    Updated: 2025/12/17 11:27:00 by rdel-olm         ###   ########.fr        ;
-;                                                                              ;
-; **************************************************************************** ;
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_list_sort.s                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/17 11:27:00 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:16:40 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -95,94 +95,83 @@ section .text
 	global ft_list_sort								; make ft_list_sort visible to the linker
 
 ft_list_sort:
-	push rbx										; save rbx on stack
-	push r12										; save r12 on stack
-	push r13										; save r13 on stack
-	push r14										; save r14 on stack
-	push r15										; save r15 on stack
+	push rbx										; save rbx
+	push r12										; save r12
+	push r13										; save r13
+	push r14										; save r14
+	push r15										; save r15
 
-	mov r12, rdi									; r12 = begin_list (pointer to head)
-	mov r13, rsi									; r13 = cmp (comparison function pointer)
-	
-	mov r14, 1										; r14 = swapped (set to 1 to enter loop)
+	mov r12, [rdi]									; r12 = *begin_list (head)
+	mov r13, rsi									; r13 = cmp function
+
+	test r12, r12									; check if head is NULL
+	jz .done										; if empty list, return
 
 	;************************************************
 	; Outer loop: repeat until no swaps occur
 	;************************************************
 
 	.outer_loop:
-		test r14, r14								; check if swapped flag is set
-		jz .done									; if not swapped, list is sorted
-		
-		xor r14, r14								; reset swapped to 0
-		
-		mov r15, [r12]								; r15 = current (start from head)
+		xor r14, r14								; swapped = 0
+		mov r15, r12								; current = head
 
 		;*******************************************
-		; Inner loop: compare adjacent elements
+		; Inner loop: iterate through list
 		;*******************************************
 
 		.inner_loop:
 			test r15, r15							; check if current is NULL
-			jz .outer_loop							; if NULL, go to next outer iteration
-			
-			mov rax, [r15 + 8]						; rax = current->next
-			test rax, rax							; check if current->next is NULL
-			jz .outer_loop							; if NULL, go to next outer iteration
+			jz .check_swapped						; if end of list, check if swapped
+
+			mov rbx, [r15 + 8]						; rbx = current->next
+			test rbx, rbx							; check if next is NULL
+			jz .check_swapped						; if next is NULL, end of inner loop
 
 			;****************************************
 			; Compare current->data with next->data
 			;****************************************
 
-			mov rdi, [r15 + 0]						; rdi = current->data (first arg to cmp)
-			mov rsi, [rax + 0]						; rsi = next->data (second arg to cmp)
-			call r13								; call cmp(current->data, next->data)
+			mov rdi, [r15]							; rdi = current->data
+			mov rsi, [rbx]							; rsi = next->data
 			
-			cmp eax, 0								; check return value
-			jle .no_swap							; if <= 0, no swap needed
-
-			;****************************************************
-			; Swap nodes: current with current->next
-			;****************************************************
-
-			mov rbx, r15							; rbx = current
-			mov rcx, [r15 + 8]						; rcx = current->next (temp)
+			call r13								; call cmp(data1, data2)
 			
-			mov rax, [rcx + 8]						; rax = temp->next
-			mov [rbx + 8], rax						; current->next = temp->next
+			cmp eax, 0								; check result
+			jle .next_node							; if <= 0, correct order
+
+			;****************************************
+			; Swap data
+			;****************************************
+
+			mov rcx, [r15]							; rcx = current->data
+			mov rdx, [rbx]							; rdx = next->data
+			mov [r15], rdx							; current->data = next->data
+			mov [rbx], rcx							; next->data = current->data
 			
-			mov [rcx + 8], rbx						; temp->next = current
-			
-			;****************************************************
-			; Update begin_list if first node changed
-			;****************************************************
+			mov r14, 1								; swapped = 1
 
-			cmp r15, [r12]							; check if current was the head
-			jne .not_head							; if not head, update previous node
-			
-			mov [r12], rcx							; update begin_list to new head (temp)
-			jmp .after_swap
+		.next_node:
+			mov r15, rbx							; current = next
+			jmp .inner_loop							; continue inner loop
 
-			.not_head:
-				;**********************************************
-                ; For simplicity, restart from head after swap
-				; This is less efficient but simpler to implement
-                ;**********************************************
-
-				jmp .outer_loop
-
-			.after_swap:
-				mov r14, 1							; set swapped = 1 (swap occurred)
-				jmp .outer_loop						; restart outer loop
-
-			.no_swap:
-				mov r15, [r15 + 8]					; current = current->next
-				jmp .inner_loop						; continue inner loop
+	.check_swapped:
+		test r14, r14								; check if swapped
+		jnz .outer_loop								; if swapped, repeat outer loop
 
 	.done:
-		pop r15										; restore r15 from stack
-		pop r14										; restore r14 from stack
-		pop r13										; restore r13 from stack
-		pop r12										; restore r12 from stack
-		pop rbx										; restore rbx from stack
+		pop r15										; restore r15
+		pop r14										; restore r14
+		pop r13										; restore r13
+		pop r12										; restore r12
+		pop rbx										; restore rbx
 		ret											; return to caller
+
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits

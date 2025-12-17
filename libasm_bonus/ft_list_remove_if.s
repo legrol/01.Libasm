@@ -1,14 +1,14 @@
-; **************************************************************************** ;
-;                                                                              ;
-;                                                         :::      ::::::::    ;
-;    ft_list_remove_if.s                                :+:      :+:    :+:    ;
-;                                                     +:+ +:+         +:+      ;
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         ;
-;                                                 +#+#+#+#+#+   +#+            ;
-;    Created: 2025/12/17 13:35:00 by rdel-olm          #+#    #+#              ;
-;    Updated: 2025/12/17 13:35:00 by rdel-olm         ###   ########.fr        ;
-;                                                                              ;
-; **************************************************************************** ;
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_list_remove_if.s                                :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/17 13:35:00 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:16:42 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -199,8 +199,12 @@ ft_list_remove_if:
 
 	ret								; Return (void function)
 
-
-
-
-
-
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits 

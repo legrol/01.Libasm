@@ -1,14 +1,14 @@
-; **************************************************************************** ;
-;                                                                              ;
-;                                                         :::      ::::::::    ;
-;    ft_atoi_base.s                                     :+:      :+:    :+:    ;
-;                                                     +:+ +:+         +:+      ;
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         ;
-;                                                 +#+#+#+#+#+   +#+            ;
-;    Created: 2025/12/17 11:24:34 by rdel-olm          #+#    #+#              ;
-;    Updated: 2025/12/17 11:24:34 by rdel-olm         ###   ########.fr        ;
-;                                                                              ;
-; **************************************************************************** ;
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_atoi_base.s                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/17 11:24:34 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:16:48 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -295,3 +295,13 @@ ft_atoi_base:
 	.not_found:
 		mov eax, -1							; return -1 (character not found)
 		ret									; return to caller
+
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits

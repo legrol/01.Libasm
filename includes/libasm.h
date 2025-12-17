@@ -3,30 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   libasm.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:21:18 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/14 20:21:18 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/17 21:14:30 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBASM_H
-#define LIBASM_H
+# define LIBASM_H
 
 // ============================================================================
 // Libraries
 // ============================================================================
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
+# include <stddef.h>
+# include <stdio.h>
+# include <string.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <errno.h>
+
+// ============================================================================
+// Type definitions
+// ============================================================================
+typedef long ssize_t;
 
 // ============================================================================
 // Access to my libraries
 // ============================================================================
-#include "colors.h"
+# include "colors.h"
 
 // ============================================================================
 // Structure for linked list - Bonus functions
@@ -34,8 +39,8 @@
 typedef struct s_list
 {
 	void	*data;
-	struct	s_list *next;
-} t_list;
+	struct 	s_list	*next;
+}	t_list;
 
 // ============================================================================
 // Mandatory functions
@@ -54,7 +59,6 @@ int		ft_atoi_base(char *str, char *base);
 void	ft_list_push_front(t_list **begin_list, void *data);
 int		ft_list_size(t_list *begin_list);
 void	ft_list_sort(t_list **begin_list, int (*cmp)());
-void	ft_list_remove_if(t_list **begin_list, void *data_ref, 
-		int (*cmp)(), void (*free_fct)(void *));
+void	ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)(), void (*free_fct)(void *));
 
 #endif

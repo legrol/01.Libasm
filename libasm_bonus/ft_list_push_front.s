@@ -1,14 +1,14 @@
-; **************************************************************************** ;
-;                                                                              ;
-;                                                         :::      ::::::::    ;
-;    ft_list_push_front.s                               :+:      :+:    :+:    ;
-;                                                     +:+ +:+         +:+      ;
-;    By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+         ;
-;                                                 +#+#+#+#+#+   +#+            ;
-;    Created: 2025/12/17 11:26:42 by rdel-olm          #+#    #+#              ;
-;    Updated: 2025/12/17 11:26:42 by rdel-olm         ###   ########.fr        ;
-;                                                                              ;
-; **************************************************************************** ;
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ft_list_push_front.s                               :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/17 11:26:42 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/17 23:16:49 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 ; ****************************************************************************
 ;                                                                             
@@ -122,3 +122,13 @@ ft_list_push_front:
 		pop r12										; restore r12 from stack
 		pop rbx										; restore rbx from stack
 		ret											; return to caller without doing anything
+
+; ****************************************************************************
+; Stack execution protection
+; ****************************************************************************
+; This section is required by the linker (ld) to mark the stack as
+; non-executable. It prevents security warnings about missing
+; .note.GNU-stack sections. This is a compilation/linking requirement,
+; not part of the project's algorithmic logic.
+; ****************************************************************************
+section .note.GNU-stack noalloc noexec nowrite progbits

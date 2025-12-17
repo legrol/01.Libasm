@@ -3,105 +3,113 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rdel-olm <rdel-olm@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/14 20:20:39 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/17 23:37:17 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libasm.h"
+#include "./libasm.h"
 
 void	ft_strlen_test()
 {
-	printf("========================\n");
+	printf("\n" BLUE "========================\n");
 	printf("ft_strlen test\n");
-	printf("========================\n");
-	printf("Count the characters in the string 42Malaga\n");
-	printf("My Function returned = %lu\n", (unsigned long)ft_strlen("42Malaga"));
-	printf("Real Function returned = %lu\n", (unsigned long)strlen("42Malaga"));
+	printf("========================\n" RESET "\n");
 
-	printf("Count the characters in the string We love code in 42 Malaga!\n");
-	printf("My Function returned = %lu\n", (unsigned long)ft_strlen("We love code in 42 Malaga!"));
-	printf("Real Function returned = %lu\n", (unsigned long)strlen("We love code in 42 Malaga!"));
+	printf("Count the characters in the string " RED "42Malaga" RESET "\n");
+	printf(CYAN "My Function returned = %lu\n" RESET, (unsigned long)ft_strlen("42Malaga"));
+	printf(GREEN "Real Function returned = %lu\n" RESET, (unsigned long)strlen("42Malaga"));
+
+	printf("\nCount the characters in the string " RED "We love code in 42 Malaga!" RESET "\n");
+	printf(CYAN "My Function returned = %lu\n" RESET, (unsigned long)ft_strlen("We love code in 42 Malaga!"));
+	printf(GREEN "Real Function returned = %lu\n" RESET, (unsigned long)strlen("We love code in 42 Malaga!"));
 }
 
 void	ft_strcpy_test()
 {
 	char dst[64];
 
-	printf("========================\n");
+	printf("\n" BLUE "========================\n");
 	printf("ft_strcpy test\n");
-	printf("========================\n");
-	printf("Copy " RED "Hades " RESET "in " CYAN "dst\n");
-	printf("My Function returned = %s\n", ft_strcpy(dst, "Hades"));
-	printf("Real Function returned = %s\n", strcpy(dst, "Hades"));
+	printf("========================\n" RESET "\n");
 
-	printf("Copy " RED "Up2You " RESET "in " CYAN "dst\n");
-	printf("My Function returned = %s\n", ft_strcpy(dst, "Up2You"));
-	printf("Real Function returned = %s\n", strcpy(dst, "Up2You"));
+	printf("Copy " RED "Hades " RESET "in " YELLOW "dst\n" RESET);
+	printf(CYAN "My Function returned = %s\n" RESET, ft_strcpy(dst, "Hades"));
+	printf(GREEN "Real Function returned = %s\n" RESET "\n", strcpy(dst, "Hades"));
 
-	printf("Copy " RED "empty string " RESET "in " CYAN "dst\n");
-	printf("My Function returned = %s\n", ft_strcpy(dst, ""));
-	printf("Real Function returned = %s\n", strcpy(dst, ""));
+	printf("Copy " RED "Up2You " RESET "in " YELLOW "dst\n" RESET);
+	printf(CYAN "My Function returned = %s\n" RESET, ft_strcpy(dst, "Up2You"));
+	printf(GREEN "Real Function returned = %s\n" RESET "\n", strcpy(dst, "Up2You"));
+	
+	printf("Copy " RED "empty string " RESET "in " YELLOW "dst\n" RESET);
+	printf(CYAN "My Function returned = %s\n" RESET, ft_strcpy(dst, ""));
+	printf(GREEN "Real Function returned = %s\n" RESET, strcpy(dst, ""));
 }
 
-int ft_strcmp_test()
+void	check_strcmp(char *s1, char *s2)
 {
-	printf("========================\n");
-	printf("ft_strcmp test\n");
-	printf("========================\n");
-	printf("Compare " RED "abcde " RESET "vs " CYAN "abcde\n");
-	printf("My Function returned = %d\n", ft_strcmp("abcde", "abcde"));
-	printf("Real Function returned= %d\n", strcmp("abcde", "abcde"));
+	int ret1 = ft_strcmp(s1, s2);
+	int ret2 = strcmp(s1, s2);
 
-	printf("Compare " RED "abcde " RESET "vs " CYAN "abdde\n");
-	printf("My Function returned = %d\n", ft_strcmp("abcde", "abdde"));
-	printf("Real Function returned = %d\n", strcmp("abcde", "abdde"));
-	printf("Compare " RED "abcde " RESET "vs " CYAN "abbde\n");
-	printf("My Function returned = %d\n", ft_strcmp("abcde", "abbde"));
-	printf("Real Function returned = %d\n", strcmp("abcde", "abbde"));
+	printf("Compare " RED "\"%s\" " RESET "vs " YELLOW "\"%s\"\n" RESET, s1, s2);
+	printf(CYAN "My Function returned = %d\n" RESET, ret1);
+	printf(GREEN "Real Function returned = %d\n\n" RESET, ret2);
+
+/*	if ((ret1 > 0 && ret2 > 0) || (ret1 < 0 && ret2 < 0) || (ret1 == 0 && ret2 == 0))
+		printf(GREEN "✓ OK (Same sign)\n\n" RESET);
+	else
+		printf(RED "✗ WRONG (Different sign)\n\n" RESET); */
+}
+
+void	ft_strcmp_test(void)
+{
+	printf("\n" BLUE "========================\n");
+	printf("ft_strcmp test\n");
+	printf("========================\n" RESET" \n");
 	
-	printf("Compare " RED "abcde " RESET "vs " CYAN "abcde with null bytes\n" RESET);
-	printf("My Function returned = %d\n", ft_strcmp("abcde", "abcde"));
-	printf("Real Function returned = %d\n", strcmp("abcde", "abcde"));
-	
-	printf("Compare " RED "abcde " RESET "vs " CYAN "g\n");
-	printf("My Function returned = %d\n", ft_strcmp("abcde", "g"));
-	printf("Real Function returned = %d\n", strcmp("abcde", "g"));
-	printf("Compare " RED "abcde " RESET "vs " CYAN "0\n" RESET);
-	printf("My Function returned = %d\n", ft_strcmp("abcde", "0"));
-	printf("Real Function returned = %d\n", strcmp("abcde", "0"));
-	return (0);
+	check_strcmp("abcde", "abcde");
+	check_strcmp("abcde", "abdde");
+	check_strcmp("abcde", "abbde");
+	check_strcmp("abcde", "abcde"); // "with null bytes" case from before was just this
+	check_strcmp("abcde", "g");
+	check_strcmp("abcde", "0");
 }
 
 void	ft_write_test()
 {
 	ssize_t ret1, ret2;
 
-	printf("========================\n");
+	printf(BLUE "========================\n");
 	printf("ft_write test\n");
-	printf("========================\n");
-	
-	printf("Writing " CYAN "'Hello from 42Malaga!\\n'" RESET " to stdout:\n");
+	printf("========================\n"	RESET "\n");
+
+	printf("Writing " RED "'Hello from 42Malaga!'" RESET " to stdout:\n");
+	printf(MAGENTA);
+	fflush(stdout);
 	ret1 = ft_write(1, "Hello from 42Malaga!\n", 22);
-	printf("My Function returned: %ld\n", (long)ret1);
-	
-	printf("Writing " CYAN "'Hello from 42!\\n'" RESET " to stdout:\n");
-	ret2 = write(1, "Hello from 42!\n", 18);
-	printf("Real Function returned: %ld\n", (long)ret2);
-	
-	printf("\nTesting invalid fd (-1):\n");
+	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret1);
+	printf(GREEN "Real Function returned: %ld\n\n" RESET, (long)ret1);
+
+	printf("Writing " RED "'Hello from 42!'" RESET " to stdout:\n");
+	printf(MAGENTA);
+	fflush(stdout);
+	ret2 = write(1, "Hello from 42!\n", 16);
+	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret2);
+	printf(RESET GREEN "Real Function returned: %ld\n" RESET, (long)ret2);
+
+	printf("\nTesting invalid fd " RED "(-1):\n" RESET);
 
 	errno = 0;
 	ret1 = ft_write(-1, "test", 4);
-	printf("My Function returned: %ld\n", (long)ret1);
-	printf("My errno: %d (%s)\n", errno, strerror(errno));
+	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret1);
+	printf(MAGENTA "My errno: %d (%s)\n" RESET, errno, strerror(errno));
 
 	errno = 0;
 	ret2 = write(-1, "test", 4);
-	printf("Real Function returned: %ld\n", (long)ret2);
-	printf("Real errno: %d (%s)\n", errno, strerror(errno));
+	printf(RESET GREEN "Real Function returned: %ld\n" RESET, (long)ret2);
+	printf(MAGENTA "Real errno: %d (%s)\n" RESET, errno, strerror(errno));
 }
 
 void	ft_read_test()
@@ -111,30 +119,39 @@ void	ft_read_test()
 	ssize_t r1;
 	ssize_t r2;
 
-	printf("========================\n");
+	printf("\n" BLUE "========================\n");
 	printf("ft_read test\n");
-	printf("========================\n");
-	printf("Reading 5 bytes from stdin (type something):\n");
+	printf("========================\n" RESET "\n");
+	printf("Reading " RED "5 bytes" RESET " from stdin with function read " RED "(type something)" RESET ":\n");
+	printf(MAGENTA);
+	fflush(stdout);
 	r1 = ft_read(0, buf1, 5);
+	printf(RESET);
 	buf1[(r1 > 0 && r1 < 32) ? r1 : 0] = '\0';
-	printf("My Function read %ld bytes: '%s'\n", (long)r1, buf1);
+	if (r1 > 0 && buf1[r1 - 1] == '\n')
+		buf1[r1 - 1] = '\0';
+	printf(CYAN "My Function read %ld bytes: '" MAGENTA "%s" CYAN "'\n" RESET, (long)r1, buf1);
 
-	printf("Reading 5 bytes from stdin with real read (type something):\n");
+	printf("Reading " RED "5 bytes" RESET " from stdin with real read " RED "(type something)" RESET ":\n");
+	printf(MAGENTA);
+	fflush(stdout);
 	r2 = read(0, buf2, 5);
+	printf(RESET);
 	buf2[(r2 > 0 && r2 < 32) ? r2 : 0] = '\0';
-	printf("Real Function read %ld bytes: '%s'\n", (long)r2, buf2);
-	printf("\nTesting invalid fd (-1):\n");
+	if (r2 > 0 && buf2[r2 - 1] == '\n')
+		buf2[r2 - 1] = '\0';
+	printf(GREEN "Real Function read %ld bytes: '" MAGENTA "%s" GREEN "'\n" RESET, (long)r2, buf2);
 
-	printf("\n[Error Test] Invalid fd (-1):\n");
+	printf("\nTesting invalid fd " RED "(-1):\n" RESET);	
 	errno = 0;
 	r1 = ft_read(-1, buf1, 5);
-	printf("My Function returned: %ld\n", (long)r1);
-	printf("My errno: %d (%s)\n", errno, strerror(errno));
+	printf(CYAN "My Function returned: %ld\n" RESET, (long)r1);
+	printf(MAGENTA "My errno: %d (%s)\n" RESET, errno, strerror(errno));
 
 	errno = 0;
 	r2 = read(-1, buf2, 5);
-	printf("Real Function returned: %ld\n", (long)r2);
-	printf("Real errno: %d (%s)\n", errno, strerror(errno));
+	printf(GREEN "Real Function returned: %ld\n" RESET, (long)r2);
+	printf(MAGENTA "Real errno: %d (%s)\n" RESET, errno, strerror(errno));
 }
 
 void	ft_strdup_test()
@@ -143,53 +160,51 @@ void	ft_strdup_test()
 	char *dup3, *dup4;
 	char *dup5, *dup6;
 
-	printf("========================\n");
+	printf("\n" BLUE "========================\n");
 	printf("ft_strdup test\n");
-	printf("========================\n");
+	printf("========================\n" RESET "\n");
 
-	printf("Duplicating " CYAN "\"Hello 42!\"" RESET ":\n");
+	printf("Duplicating " RED "\"Hello 42!\"" RESET ":\n");
 	dup1 = ft_strdup("Hello 42!");
 	dup2 = strdup("Hello 42!");
 	if (!dup1 || !dup2)
 	{
-		printf("Allocation failed\n");
+		printf(RED "Allocation failed\n" RESET);
 		return;
 	}
-	printf("My Function: \"%s\"\n", dup1);
-	printf("Real Function: \"%s\"\n", dup2);
-	printf("Pointers equal? %s\n", (dup1 == dup2) ? "YES (WRONG)" : "NO (OK)");
+	printf(CYAN "My Function: \"%s\"\n" RESET, dup1);
+	printf(GREEN "Real Function: \"%s\"\n" RESET, dup2);
+	printf("Different pointers (new memory)? %s\n", (dup1 != dup2) ? GREEN "YES (OK)" RESET : RED "NO (WRONG)" RESET);
 	dup1[0] = 'X';
-	printf("After modification, My Function: \"%s\"\n", dup1);
+	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup1);
 	free(dup1);
 	free(dup2);
 
-	printf("\nDuplicating " CYAN "\"Libasm Project\"" RESET ":\n");
+	printf("\nDuplicating " RED "\"Libasm Project\"" RESET ":\n");
 	dup3 = ft_strdup("Libasm Project");
 	dup4 = strdup("Libasm Project");
 	if (!dup3 || !dup4)
 	{
-		printf("Allocation failed\n");
+		printf(RED "Allocation failed\n" RESET);
 		return;
 	}
-	printf("My Function: \"%s\"\n", dup3);
-	printf("Real Function: \"%s\"\n", dup4);
+	printf(CYAN "My Function: \"%s\"\n" RESET, dup3);
+	printf(GREEN "Real Function: \"%s\"\n" RESET, dup4);
 	dup3[0] = 'X';
-	printf("After modification, My Function: \"%s\"\n", dup3);
+	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup3);
 	free(dup3);
 	free(dup4);
 
-	printf("\nDuplicating " CYAN "empty string \"\"" RESET ":\n");
+	printf("\nDuplicating " RED "empty string \"\"" RESET ":\n");
 	dup5 = ft_strdup("");
 	dup6 = strdup("");
 	if (!dup5 || !dup6)
 	{
-		printf("Allocation failed\n");
+		printf(RED "Allocation failed\n" RESET);
 		return;
 	}
-	printf("My Function: \"%s\" (len=%lu)\n", dup5, strlen(dup5));
-	printf("Real Function: \"%s\" (len=%lu)\n", dup6, strlen(dup6));
-	dup5[0] = 'X';
-	printf("After modification, My Function: \"%s\"\n", dup5);
+	printf(CYAN "My Function: \"%s\" (len=%lu)\n" RESET, dup5, strlen(dup5));
+	printf(GREEN "Real Function: \"%s\" (len=%lu)\n" RESET, dup6, strlen(dup6));
 	free(dup5);
 	free(dup6);
 }
@@ -198,9 +213,9 @@ void	ft_atoi_base_test(void)
 {
 	int	res1, res2;
 
-	printf("========================\n");
+	printf("\n" BLUE "========================\n");
 	printf("ft_atoi_base test\n");
-	printf("========================\n\n");
+	printf("========================\n" RESET "\n");
 
 	printf("Test 1: " CYAN "Decimal Base (\"0123456789\")" RESET "\n");
 	res1 = ft_atoi_base("42", "0123456789");
@@ -252,9 +267,9 @@ void	ft_list_push_front_test(void)
 	int		data2 = 100;
 	int		data3 = 200;
 
-	printf("========================\n");
+	printf(BLUE "========================\n");
 	printf("ft_list_push_front test\n");
-	printf("========================\n\n");
+	printf("========================\n\n" RESET);
 
 	list = NULL;
 	printf("Initial list: " CYAN "NULL\n" RESET);
@@ -285,9 +300,9 @@ void	ft_list_size_test(void)
 	int		data3 = 3;
 	int		size;
 
-	printf("========================\n");
+	printf(BLUE "========================\n");
 	printf("ft_list_size test\n");
-	printf("========================\n\n");
+	printf("========================\n\n" RESET);
 
 	list = NULL;
 	size = ft_list_size(list);
@@ -321,9 +336,9 @@ void	ft_list_sort_test(void)
 	int		data3 = 99;
 	int		data4 = 5;
 
-	printf("========================\n");
+	printf(BLUE "========================\n");
 	printf("ft_list_sort test\n");
-	printf("========================\n\n");
+	printf("========================\n\n" RESET);
 
 	list = NULL;
 	ft_list_push_front(&list, &data1);
@@ -361,12 +376,12 @@ void	ft_list_remove_if_test(void)
 	int		data1 = 42;
 	int		data2 = 10;
 	int		data3 = 42;
-	int		data4 = 5;
+	int		data4 = 42;
 	int		remove_val = 42;
 
-	printf("========================\n");
+	printf(BLUE "========================\n");
 	printf("ft_list_remove_if test\n");
-	printf("========================\n\n");
+	printf("========================\n\n" RESET);
 
 	list = NULL;
 	ft_list_push_front(&list, &data1);
