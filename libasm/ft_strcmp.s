@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/13 16:03:25 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:16:45 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/18 23:52:06 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,13 +44,16 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***************************************************
-;	int	ft_strcmp(const char *s1, const char *s2);
-;				type	size	name   register
-;	argument	char *	8(ptr)	s1		rdi 
-;	argument	char *	8(ptr)	s2		rsi 
-;	variable	size_t	8(long)	i		rax 
-;***************************************************
+;*****************************************************************************
+;    int    ft_strcmp(const char *s1, const char *s2);
+;
+;                type    size    name    register
+;  argument     char *   8(ptr)  s1      rdi    	; first string pointer
+;  argument     char *   8(ptr)  s2      rsi    	; second string pointer
+;  variable     size_t   8(long) i       rax    	; index counter stored in rax
+;  temporary    int32    4       v1,v2   ecx,edx 	; bytes loaded into ecx/edx
+;  return       int      4       diff    eax    	; difference returned in eax
+;*****************************************************************************
 
 section .text
 	global ft_strcmp					; make ft_strcmp visible to the linker

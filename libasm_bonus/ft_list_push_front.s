@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:26:42 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:16:49 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/18 21:29:38 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,8 +66,13 @@
 ;***********************************************************
 
 section .text
-	global ft_list_push_front					    ; make ft_list_push_front visible to the linker
-	extern malloc									; external libc malloc function
+	global ft_list_push_front				    ; make ft_list_push_front visible to the linker
+	extern malloc							; external libc malloc function
+	; This assembler implementation calls `malloc_wrapper` (C) instead of
+	; `malloc` directly. `malloc_wrapper` is a minimal C shim located at
+	; `src/malloc_wrapper.c` that forwards to libc `malloc` and provides a
+	; PLT/GOT-friendly symbol for PIE builds.
+	extern malloc_wrapper					; wrapper implemented in src/malloc_wrapper.c
 
 ft_list_push_front:
 	push rbx										; save rbx on stack
@@ -80,8 +85,8 @@ ft_list_push_front:
 	; Allocate memory for new node (16 bytes)
 	;************************************************
 
-	mov rdi, 16										; 16 bytes = sizeof(t_list)
-	call malloc										; allocate memory, rax = new_node pointer
+	mov rdi, 16								; 16 bytes = sizeof(t_list)
+	call malloc_wrapper					; allocate memory via wrapper, rax = new_node pointer
 	test rax, rax									; check if malloc returned NULL
 	jz .alloc_fail									; if allocation failed, return
 

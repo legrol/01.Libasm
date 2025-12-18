@@ -6,12 +6,13 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/17 23:37:17 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/18 16:22:36 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./libasm.h"
 
+/* ************************************************************************************************************************** */
 void	ft_strlen_test()
 {
 	printf("\n" BLUE "========================\n");
@@ -26,6 +27,8 @@ void	ft_strlen_test()
 	printf(CYAN "My Function returned = %lu\n" RESET, (unsigned long)ft_strlen("We love code in 42 Malaga!"));
 	printf(GREEN "Real Function returned = %lu\n" RESET, (unsigned long)strlen("We love code in 42 Malaga!"));
 }
+
+/* ************************************************************************************************************************** */
 
 void	ft_strcpy_test()
 {
@@ -48,6 +51,8 @@ void	ft_strcpy_test()
 	printf(GREEN "Real Function returned = %s\n" RESET, strcpy(dst, ""));
 }
 
+/* ************************************************************************************************************************** */
+
 void	check_strcmp(char *s1, char *s2)
 {
 	int ret1 = ft_strcmp(s1, s2);
@@ -63,6 +68,8 @@ void	check_strcmp(char *s1, char *s2)
 		printf(RED "✗ WRONG (Different sign)\n\n" RESET); */
 }
 
+/* ************************************************************************************************************************** */
+
 void	ft_strcmp_test(void)
 {
 	printf("\n" BLUE "========================\n");
@@ -76,6 +83,8 @@ void	ft_strcmp_test(void)
 	check_strcmp("abcde", "g");
 	check_strcmp("abcde", "0");
 }
+
+/* ************************************************************************************************************************** */
 
 void	ft_write_test()
 {
@@ -112,6 +121,8 @@ void	ft_write_test()
 	printf(MAGENTA "Real errno: %d (%s)\n" RESET, errno, strerror(errno));
 }
 
+/* ************************************************************************************************************************** */
+
 void	ft_read_test()
 {
 	char buf1[32];
@@ -126,6 +137,11 @@ void	ft_read_test()
 	printf(MAGENTA);
 	fflush(stdout);
 	r1 = ft_read(0, buf1, 5);
+	if (r1 == 5 && buf1[4] != '\n')
+	{
+		char c;
+		while (read(0, &c, 1) > 0 && c != '\n');
+	}
 	printf(RESET);
 	buf1[(r1 > 0 && r1 < 32) ? r1 : 0] = '\0';
 	if (r1 > 0 && buf1[r1 - 1] == '\n')
@@ -136,6 +152,11 @@ void	ft_read_test()
 	printf(MAGENTA);
 	fflush(stdout);
 	r2 = read(0, buf2, 5);
+	if (r2 == 5 && buf2[4] != '\n')
+	{
+		char c;
+		while (read(0, &c, 1) > 0 && c != '\n');
+	}
 	printf(RESET);
 	buf2[(r2 > 0 && r2 < 32) ? r2 : 0] = '\0';
 	if (r2 > 0 && buf2[r2 - 1] == '\n')
@@ -153,6 +174,8 @@ void	ft_read_test()
 	printf(GREEN "Real Function returned: %ld\n" RESET, (long)r2);
 	printf(MAGENTA "Real errno: %d (%s)\n" RESET, errno, strerror(errno));
 }
+
+/* ************************************************************************************************************************** */
 
 void	ft_strdup_test()
 {
@@ -209,6 +232,8 @@ void	ft_strdup_test()
 	free(dup6);
 }
 
+/* ************************************************************************************************************************** */
+
 void	ft_atoi_base_test(void)
 {
 	int	res1, res2;
@@ -217,47 +242,61 @@ void	ft_atoi_base_test(void)
 	printf("ft_atoi_base test\n");
 	printf("========================\n" RESET "\n");
 
-	printf("Test 1: " CYAN "Decimal Base (\"0123456789\")" RESET "\n");
+	printf(CYAN "Test 1: " RESET RED "Decimal Base (\"0123456789\")" RESET "\n");
 	res1 = ft_atoi_base("42", "0123456789");
 	res2 = atoi("42");
-	printf("  Input: \"42\" -> My Result: %d, Expected: %d %s\n", res1, res2, (res1 == res2) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"42\" " RESET "-> My Result: " YELLOW "%d" RESET ", Expected: " GREEN "%d " RESET "%s\n", res1, res2, (res1 == res2) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("-123", "0123456789");
 	res2 = atoi("-123");
-	printf("  Input: \"-123\" -> My Result: %d, Expected: %d %s\n\n", res1, res2, (res1 == res2) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"-123\" " RESET "-> My Result: " YELLOW "%d" RESET ", Expected: " GREEN "%d " RESET "%s\n\n", res1, res2, (res1 == res2) ? GREEN "✓" RESET : RED "✗" RESET);
 
-	printf("Test 2: " CYAN "Binary Base (\"01\")" RESET "\n");
+	printf(CYAN "Test 2: " RESET RED "Binary Base (\"01\")" RESET "\n");
 	res1 = ft_atoi_base("1010", "01");
-	printf("  Input: \"1010\" (binary) -> My Result: %d (expected 10) %s\n", res1, (res1 == 10) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"1010\" " RESET "(binary) -> My Result: " YELLOW "%d" RESET " (expected 10) %s\n", res1, (res1 == 10) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("-1111", "01");
-	printf("  Input: \"-1111\" (binary) -> My Result: %d (expected -15) %s\n\n", res1, (res1 == -15) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"-1111\" " RESET "(binary) -> My Result: " YELLOW "%d" RESET " (expected -15) %s\n\n", res1, (res1 == -15) ? GREEN "✓" RESET : RED "✗" RESET);
 
-	printf("Test 3: " CYAN "Hexadecimal Base (\"0123456789ABCDEF\")" RESET "\n");
+	printf(CYAN "Test 3: " RESET RED "Hexadecimal Base (\"0123456789ABCDEF\")" RESET "\n");
 	res1 = ft_atoi_base("FF", "0123456789ABCDEF");
-	printf("  Input: \"FF\" (hex) -> My Result: %d (expected 255) %s\n", res1, (res1 == 255) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"FF\" " RESET "(hex) -> My Result: " YELLOW "%d" RESET " (expected 255) %s\n", res1, (res1 == 255) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("ABCD", "0123456789ABCDEF");
-	printf("  Input: \"ABCD\" (hex) -> My Result: %d (expected 43981) %s\n\n", res1, (res1 == 43981) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"ABCD\" " RESET "(hex) -> My Result: " YELLOW "%d" RESET " (expected 43981) %s\n\n", res1, (res1 == 43981) ? GREEN "✓" RESET : RED "✗" RESET);
 
-	printf("Test 4: " CYAN "Whitespace Handling" RESET "\n");
+	printf(CYAN "Test 4: " RESET RED "Whitespace Handling" RESET "\n");
 	res1 = ft_atoi_base("  +42", "0123456789");
-	printf("  Input: \"  +42\" -> My Result: %d (expected 42) %s\n", res1, (res1 == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"  +42\" " RESET "-> My Result: " YELLOW "%d" RESET " (expected 42) %s\n", res1, (res1 == 42) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("\t-99", "0123456789");
-	printf("  Input: \"\\t-99\" -> My Result: %d (expected -99) %s\n\n", res1, (res1 == -99) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"\\t-99\" " RESET "-> My Result: " YELLOW "%d" RESET " (expected -99) %s\n\n", res1, (res1 == -99) ? GREEN "✓" RESET : RED "✗" RESET);
 
-	printf("Test 5: " RED "Invalid Bases (should return 0)" RESET "\n");
+	printf(CYAN "Test 5: " RESET RED "Invalid Bases (should return 0)" RESET "\n");
 	res1 = ft_atoi_base("42", "01+0");
-	printf("  Base with '+': My Result: %d (expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "'+'" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("42", "0");
-	printf("  Base with 1 char: My Result: %d (expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "1 char" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("42", "01 1");
-	printf("  Base with space: My Result: %d (expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "space" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("42", "0101");
-	printf("  Base with duplicates: My Result: %d (expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "duplicates" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 
-	printf("Test 6: " CYAN "Invalid Input (chars not in base)" RESET "\n");
+	printf(CYAN "Test 6: " RESET RED "Invalid Input (chars not in base)" RESET "\n");
 	res1 = ft_atoi_base("42F", "0123456789");
-	printf("  Input: \"42F\" in decimal -> My Result: %d (expected 42) %s\n", res1, (res1 == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"42F\" " RESET "in decimal -> My Result: " YELLOW "%d" RESET " (expected 42) %s\n", res1, (res1 == 42) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("", "0123456789");
-	printf("  Input: empty string -> My Result: %d (expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "empty string " RESET "-> My Result: " YELLOW "%d" RESET " (expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+}
+
+/* ************************************************************************************************************************** */
+
+void	free_list(t_list *list)
+{
+	t_list	*tmp;
+
+	while (list)
+	{
+		tmp = list;
+		list = list->next;
+		free(tmp);
+	}
 }
 
 void	ft_list_push_front_test(void)
@@ -275,22 +314,27 @@ void	ft_list_push_front_test(void)
 	printf("Initial list: " CYAN "NULL\n" RESET);
 
 	ft_list_push_front(&list, &data1);
-	printf("After push(42): list points to node with data " GREEN "✓\n" RESET);
-	printf("  node->data = %d (expected 42) %s\n", *(int *)list->data, (*(int *)list->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("After push(" RED "42" RESET "): list points to node with data " GREEN "✓\n" RESET);
+	printf("  node->data = " YELLOW "%d " RESET "(expected 42) %s\n", *(int *)list->data, (*(int *)list->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
 	printf("  node->next = " CYAN "NULL" RESET " (expected NULL) %s\n\n", (list->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	ft_list_push_front(&list, &data2);
-	printf("After push(100): new node at head\n");
-	printf("  head->data = %d (expected 100) %s\n", *(int *)list->data, (*(int *)list->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->data = %d (expected 42) %s\n", *(int *)list->next->data, (*(int *)list->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("After push(" RED "100" RESET "): new node at head\n");
+	printf("  head->data = " YELLOW "%d " RESET "(expected 100) %s\n", *(int *)list->data, (*(int *)list->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->data = " YELLOW "%d " RESET "(expected 42) %s\n", *(int *)list->next->data, (*(int *)list->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
 	printf("  head->next->next = " CYAN "NULL" RESET " %s\n\n", (list->next->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	ft_list_push_front(&list, &data3);
-	printf("After push(200): new node at head\n");
-	printf("  head->data = %d (expected 200) %s\n", *(int *)list->data, (*(int *)list->data == 200) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->data = %d (expected 100) %s\n", *(int *)list->next->data, (*(int *)list->next->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->next->data = %d (expected 42) %s\n\n", *(int *)list->next->next->data, (*(int *)list->next->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("After push(" RED "200" RESET "): new node at head\n");
+	printf("  head->data = " YELLOW "%d " RESET "(expected 200) %s\n", *(int *)list->data, (*(int *)list->data == 200) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->data = " YELLOW "%d " RESET "(expected 100) %s\n", *(int *)list->next->data, (*(int *)list->next->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->next->data = " YELLOW "%d " RESET "(expected 42) %s\n", *(int *)list->next->next->data, (*(int *)list->next->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->next->next = " CYAN "NULL" RESET " (expected NULL) %s\n\n", (list->next->next->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
+
+	free_list(list);
 }
+
+/* ************************************************************************************************************************** */
 
 void	ft_list_size_test(void)
 {
@@ -306,20 +350,23 @@ void	ft_list_size_test(void)
 
 	list = NULL;
 	size = ft_list_size(list);
-	printf("Empty list size: %d (expected 0) %s\n\n", size, (size == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("Empty list size: " RED "%d " RESET "(expected 0) %s\n\n", size, (size == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	ft_list_push_front(&list, &data1);
 	size = ft_list_size(list);
-	printf("After adding 1 node: size = %d (expected 1) %s\n", size, (size == 1) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("After adding " CYAN "1 " RESET "node: size = " GREEN "%d " RESET "(expected 1) %s\n", size, (size == 1) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	ft_list_push_front(&list, &data2);
 	size = ft_list_size(list);
-	printf("After adding 2 nodes: size = %d (expected 2) %s\n", size, (size == 2) ? GREEN "✓" RESET : RED "✗" RESET);
-
+	printf("After adding " CYAN "2 " RESET "nodes: size = " GREEN "%d " RESET "(expected 2) %s\n", size, (size == 2) ? GREEN "✓" RESET : RED "✗" RESET);
 	ft_list_push_front(&list, &data3);
 	size = ft_list_size(list);
-	printf("After adding 3 nodes: size = %d (expected 3) %s\n\n", size, (size == 3) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("After adding " CYAN "3 " RESET "nodes: size = " GREEN "%d " RESET "(expected 3) %s\n\n", size, (size == 3) ? GREEN "✓" RESET : RED "✗" RESET);
+
+	free_list(list);
 }
+
+/* ************************************************************************************************************************** */
 
 int	ft_compare_ints(void *a, void *b)
 {
@@ -346,17 +393,21 @@ void	ft_list_sort_test(void)
 	ft_list_push_front(&list, &data3);
 	ft_list_push_front(&list, &data4);
 
-	printf("Original list (as inserted): 5 -> 99 -> 10 -> 42\n");
-	printf("  Values: %d, %d, %d, %d\n\n", *(int *)list->data, *(int *)list->next->data, *(int *)list->next->next->data, *(int *)list->next->next->next->data);
+	printf("Original list (as inserted): " RED "5 -> 99 -> 10 -> 42\n" RESET);
+	printf("  Values: " CYAN "%d, %d, %d, %d\n\n" RESET, *(int *)list->data, *(int *)list->next->data, *(int *)list->next->next->data, *(int *)list->next->next->next->data);
 
 	ft_list_sort(&list, &ft_compare_ints);
 
-	printf("After sorting (ascending): 5 -> 10 -> 42 -> 99\n");
-	printf("  Values: %d, %d, %d, %d\n", *(int *)list->data, *(int *)list->next->data, *(int *)list->next->next->data, *(int *)list->next->next->next->data);
+	printf("After sorting (ascending): " RED "5 -> 10 -> 42 -> 99\n" RESET);
+	printf("  Values: " CYAN "%d, %d, %d, %d\n" RESET, *(int *)list->data, *(int *)list->next->data, *(int *)list->next->next->data, *(int *)list->next->next->next->data);
 	int sorted = (*(int *)list->data == 5 && *(int *)list->next->data == 10 && 
 				  *(int *)list->next->next->data == 42 && *(int *)list->next->next->next->data == 99);
 	printf("  Result: %s\n\n", sorted ? GREEN "✓ Correctly sorted" RESET : RED "✗ Not sorted" RESET);
+
+	free_list(list);
 }
+
+/* ************************************************************************************************************************** */
 
 int	ft_compare_remove(void *a, void *b)
 {
@@ -389,21 +440,25 @@ void	ft_list_remove_if_test(void)
 	ft_list_push_front(&list, &data3);
 	ft_list_push_front(&list, &data4);
 
-	printf("Original list: 42 -> 42 -> 10 -> 42\n");
-	printf("  Values: %d, %d, %d, %d (size: %d)\n", *(int *)list->data, *(int *)list->next->data, 
+	printf("Original list: " RED "42 -> 42 -> 10 -> 42\n" RESET);
+	printf("  Values: " CYAN "%d, %d, %d, %d " RESET "(size: " GREEN "%d" RESET ")\n", *(int *)list->data, *(int *)list->next->data, 
 			*(int *)list->next->next->data, *(int *)list->next->next->next->data, ft_list_size(list));
-	printf("  Removing all nodes with value 42\n\n");
+	printf("  Removing all nodes with value " YELLOW "42" RESET "\n\n");
 
 	ft_list_remove_if(&list, &remove_val, &ft_compare_remove, &ft_free_int);
 
-	printf("After removing value 42: 10 -> NULL\n");
+	printf("After removing value " YELLOW "42" RESET ": " RED "10 -> NULL\n" RESET);
 	if (list != NULL)
 	{
-		printf("  First node value: %d (expected 10) %s\n", *(int *)list->data, (*(int *)list->data == 10) ? GREEN "✓" RESET : RED "✗" RESET);
+		printf("  First node value: " CYAN "%d " RESET "(expected 10) %s\n", *(int *)list->data, (*(int *)list->data == 10) ? GREEN "✓" RESET : RED "✗" RESET);
 		printf("  Next node: " CYAN "%s" RESET " %s\n", (list->next == NULL) ? "NULL" : "NOT NULL", (list->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
-		printf("  List size: %d (expected 1) %s\n\n", ft_list_size(list), (ft_list_size(list) == 1) ? GREEN "✓" RESET : RED "✗" RESET);
+		printf("  List size: " CYAN "%d " RESET "(expected 1) %s\n\n", ft_list_size(list), (ft_list_size(list) == 1) ? GREEN "✓" RESET : RED "✗" RESET);
 	}
+
+	free_list(list);
 }
+
+/* ************************************************************************************************************************** */
 
 int	main(void)
 {

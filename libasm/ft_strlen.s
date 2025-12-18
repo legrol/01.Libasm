@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/13 16:03:36 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:16:46 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/18 23:57:03 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,28 +35,28 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***************************************************
-;	size_t	ft_strlen(const char *s);
+;******************************************************************************
+;    size_t    ft_strlen(const char *s);
 ;
-;				type	size	name	register   
-;	argument	char *	8(ptr)	s   	rdi 
-;	variable	size_t	8(long)	i   	rax 
-;***************************************************
+;                type    size    name    register
+;  argument    char *   8(ptr)  s       rdi
+;  variable    size_t   8(long) len     rax    ; len stored in rax as counter
+;******************************************************************************
 
 section .text
 	global ft_strlen			; make ft_strlen visible to the linker
 
 ft_strlen:
-	mov rax, 0					; initialize length counter i = 0
+	mov rax, 0					; initialize length counter len = 0
 	jmp .loop					; jump to the loop condition
 
 	.loop:
-		cmp BYTE [rdi + rax], 0	; compare s[i] with '\0'
-		jne .increment			; if not null, continue counting
-		jmp .endloop			; if null, end the loop
+		cmp BYTE [rdi + rax], 0	; compare s[len] with '\0'
+		jne .increment			; if not null (!=), continue counting
+		jmp .endloop			; if null (==), end the loop
 
 	.increment:
-		inc rax					; increment the length counter i++
+		inc rax					; increment the length counter len++
 		jmp .loop				; repeat the loop
 
 	.endloop:

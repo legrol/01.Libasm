@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:15:56 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/18 23:53:23 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,11 @@
 ;                                                                             
 ;   char *ft_strdup(const char *s)                                            
 ;   {                                                                         
-;       size_t len;                                                           
+;       size_t i;                                                           
 ;       char *dst;                                                            
 ;                                                                             
-;       len = ft_strlen(s) + 1;                                               
-;       dst = (char *)malloc(len);                                            
+;       i = ft_strlen(s) + 1;                                               
+;       dst = (char *)malloc(i);                                            
 ;       if (!dst)                                                             
 ;           return NULL;                                                      
 ;       ft_strcpy(dst, s);                                                    
@@ -43,22 +43,26 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***************************************************************
-;	char	*ft_strdup(const char *s);
-;				type	size	name	register
-;	argument	char *	8(ptr)	s   	rdi 
-;	variable	size_t	8(long)	i		rax
-;***************************************************************
+;*****************************************************************************
+;    char * ft_strdup(const char *s);
+;
+;                type    size    name    register
+;  argument     char *   8(ptr)  s       rdi    ; source string pointer
+;  variable     size_t   8(long) len     rax    ; length computed by ft_strlen (len)
+;  saved        ptr      8(ptr)  src_save rbx   ; original src pointer saved in rbx
+;  uses         void*    8(ptr)  dst     rax    ; destination pointer returned in rax
+;*****************************************************************************
 
 section .text
 	global ft_strdup			; make ft_strdup visible to the linker
-	extern malloc				; External libc function malloc
-	extern ft_strlen			; External function to compute string length
-	extern ft_strcpy			; External function to copy strings
-
-section .text
-	global ft_strdup			; make ft_strdup visible to the linker
-	extern malloc				; External libc function malloc
+	
+	;**********************************************************************
+	; This implementation relies on a tiny assembly `malloc_wrapper`
+	; (implemented in `src/malloc_wrapper.S`) which forwards to libc's
+	; `malloc`. The wrapper is assembled and linked only into the `test`
+	; binary, so `libasm.a` remains mandatory-only and purely assembly.
+	;**********************************************************************
+	extern malloc_wrapper		; assembly wrapper: calls malloc@PLT
 	extern ft_strlen			; External function to compute string length
 	extern ft_strcpy			; External function to copy strings
 
@@ -69,9 +73,13 @@ ft_strdup:
 	call ft_strlen				; compute length of source string (rax = len)
 	inc rax						; add 1 byte (len + 1) for null terminator
 	mov rdi, rax				; first argument to malloc: size = len + 1
-	call malloc					; allocate memory, return pointer in rax
-	test rax, rax				; check if malloc returned NULL
-	je .alloc_fail				; if allocation failed, jump to error handling
+
+	;**********************************************************************
+	; call the assembly wrapper which forwards to libc malloc
+	;**********************************************************************
+	call malloc_wrapper		; allocate memory via wrapper, return pointer in rax
+	test rax, rax			; check if malloc returned NULL
+	je .alloc_fail			; if allocation failed, jump to error handling
 
 	mov rdi, rax				; set destination pointer (dst) for ft_strcpy
 	mov rsi, rbx				; restore source pointer from rbx

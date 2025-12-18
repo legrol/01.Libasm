@@ -51,7 +51,7 @@ LIBASM_BONUS_DIR	=libasm_bonus
 # ══ Flags ═══════════════════════════════════════════════════════════════════ #
 #    -----                                                                     #
 
-CFLAGS 				= -Wall -Werror -Wextra -no-pie
+CFLAGS 				= -Wall -Werror -Wextra
 IFLAGS				= -I${INC_DIR}
 
 # ══ Flags Bonus══════════════════════════════════════════════════════════════ #
@@ -93,10 +93,10 @@ OBJ_BONUS			= $(patsubst $(LIBASM_BONUS_DIR)/%.s,$(OBJ_DIR)/%.o,$(ASM_BONUS_SRC)
 
 all: ${NAME}
 
-${NAME}: $(OBJ_DIR) pre_build $(OBJ_ASM) bonus_separator $(OBJ_BONUS)
+${NAME}: $(OBJ_DIR) pre_build $(OBJ_ASM)
 	@echo ""
 	@echo "$(YELLOW)Creating static library ${NAME}...$(DEF_COLOR)"
-	@${AR} ${NAME} $(OBJ_ASM) $(OBJ_BONUS)
+	@${AR} ${NAME} $(OBJ_ASM)
 	@echo ""
 	@echo "$(GREEN)${NAME} created successfully ✓$(DEF_COLOR)"
 	@echo ""
@@ -115,6 +115,22 @@ $(OBJ_DIR)/%.o: $(LIBASM_DIR)/%.s $(OBJ_DIR)
 	@sed 's/^#/;/g' $< > $<.tmp
 	@$(NASM) -f elf64 $<.tmp -o $@
 	@rm $<.tmp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(OBJ_DIR)
+	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
+	@sed 's/^#/;/g' $< > $<.tmp
+	@$(NASM) -f elf64 $<.tmp -o $@
+	@rm $<.tmp
+$(OBJ_DIR)/malloc_wrapper.o: $(SRC_DIR)/malloc_wrapper.S $(OBJ_DIR)
+	@echo "$(CYAN)Compiling GAS assembly $<...$(DEF_COLOR)"
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/errno_helper.o: $(SRC_DIR)/errno_helper.S $(OBJ_DIR)
+	@echo "$(CYAN)Compiling GAS assembly $<...$(DEF_COLOR)"
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.S $(OBJ_DIR)
+	@echo "$(CYAN)Compiling assembly $<...$(DEF_COLOR)"
+	@$(CC) $(CFLAGS) -c $< -o $@
 $(OBJ_DIR)/%.o: $(LIBASM_BONUS_DIR)/%.s $(OBJ_DIR)
 	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
 	@sed 's/^#/;/g' $< > $<.tmp
@@ -126,14 +142,20 @@ $(OBJ_DIR):
 # ══ Rules Bonus ═════════════════════════════════════════════════════════════ #
 #    -----------                                                               #
 
-bonus:
+bonus: ${NAME} $(OBJ_BONUS)
+	@echo ""
+	@echo "$(YELLOW)Adding bonus objects to ${NAME}...$(DEF_COLOR)"
+	@${AR} ${NAME} $(OBJ_ASM) $(OBJ_BONUS)
+	@echo "$(GREEN)${NAME} updated with bonus ✓$(DEF_COLOR)"
+	@echo ""
 	
 # ══ Rules Test ══════════════════════════════════════════════════════════════ #
 #    -----------                                                               #
 
-test: ${NAME}
-	@echo "$(YELLOW)Linking test binary...$(DEF_COLOR)"
-	@${CC} ${CFLAGS} ${IFLAGS} -o test $(SRC_DIR)/main.c ${NAME}
+test: ${NAME} $(OBJ_BONUS) $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
+	@${RM} test
+	@echo "$(YELLOW)Linking test binary (mandatory + bonus objects)...$(DEF_COLOR)"
+	@${CC} ${CFLAGS} ${IFLAGS} -o test $(SRC_DIR)/main.c ${NAME} $(OBJ_BONUS) $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
 	@echo "$(GREEN)test binary created! $(DEF_COLOR)"
 	@echo ""
 

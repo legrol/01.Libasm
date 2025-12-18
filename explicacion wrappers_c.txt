@@ -1,0 +1,64 @@
+
+Proposing Alternatives for Defense...
+Buena pregunta — explico con claridad qué son los “wrappers”, qué hacen, si encajan con el subject y cómo defenderlo en la defensa del proyecto (todo en español).
+
+Qué es un wrapper (envoltorio)
+
+Un wrapper es una función pequeña (normalmente en C) que “envuelve” otra función — p. ej. una llamada a malloc, free, __errno_location, etc.
+Su trabajo típico: recibir argumentos, llamar a la función real de la libc, realizar un pequeño ajuste (p. ej. adaptar retorno, setear errno, o exponer una ABI/relocation diferente), y devolver el resultado.
+Ejemplo simple (ya creado en tu repo):
+errno_helper.c
+int set_errno_and_return_minus_one(int err) { errno = err; return -1; }
+Aquí el wrapper simplemente pone errno y devuelve -1 — muy pequeño y sin lógica de alto nivel.
+Por qué usamos wrappers aquí (motivo técnico)
+
+En x86_64, al compilar y enlazar como PIE (ejecutable position-independent), ciertas referencias desde código ensamblador a símbolos externos (p. ej. malloc, free, __errno_location) pueden generar relocaciones no válidas (R_X86_64_PC32) si el .s no se escribió en modo PIC. El enlazador exige que las llamadas externas usen PLT/GOT o que el ASM haga referencias RIP-relatives correctas.
+Reescribir cada .s para emitir código PIC correcto (RIP-relative loads hacia GOT/PLT) es 100% posible pero laborioso y propenso a errores. Un wrapper C, compilado por gcc, garantiza llamadas y relocaciones que funcionan con PIE sin tocar mucho ASM.
+En resumen: los wrappers son una solución práctica para evitar problemas de relocación/enlace mientras mantienes la lógica principal implementada en ASM.
+¿Están permitidos por el subject?
+
+El subject exige:
+Reescribir las funciones listadas en ensamblador de 64 bits.
+No usar -no-pie, no usar inline ASM, usar NASM, etc.
+Lo importante para evaluación: las funciones obligatorias (ft_strlen, ft_strcpy, ft_strcmp, ft_write, ft_read, ft_strdup) deben estar reescritas en .s de 64-bit.
+Añadir pequeños wrappers C para interactuar con libc (p. ej. para setear errno, o para normalizar llamadas a malloc/free) no rompe el requisito siempre que:
+La lógica y el comportamiento esperado de las funciones obligatorias esté implementada en ASM (no delegues la implementación principal a C).
+Los wrappers sean mínimos, documentados y presentados como “ayuda de enlace/ABI” (no como implementación de la función que debería ser ASM).
+En la práctica de muchas revisiones, los wrappers para solucionar problemas de ABI/enlace son aceptables si justificas correctamente por qué son necesarios y demuestras que las funciones obligatorias son ASM.
+Cómo defenderlo en la defensa (qué mostrar y qué decir)
+
+Preparación: incluye en tu repositorio:
+errno_helper.c (o cualquier wrapper) con una cabecera corta explicando su propósito.
+Un pequeño README.md o comentario en el Readme.md del proyecto indicando claramente: “Las funciones obligatorias se implementan en ASM; añadí x wrappers C mínimos para compatibilidad PIE/PLT durante enlace. Razonamiento técnico: …”.
+Un commit con mensaje claro: “Add minimal helper to set errno for PIE linking”.
+En la defensa, muéstralo así (guion sugerido):
+Abre ft_read.s y ft_write.s y explica: “Aquí está la conversión a syscall; en el caso de error el kernel devuelve -errno. Para escribir correctamente errno desde espacio usuario en un binario PIE, se pueden usar __errno_location() con relocaciones correctas; sin embargo, la forma portable y robusta que evité es ... (explica brevemente la reloc issue)”.
+Abre errno_helper.c y di: “Por portabilidad y para evitar errores de reloc durante enlace PIE, añadí este helper; su código es trivial y no contiene la lógica de la función; solo setea errno y devuelve -1”.
+Muestra el Makefile y señala que enlazas errno_helper.c con el test (explica que sólo se usó para el binario de prueba y para permitir enlazar sin -no-pie).
+Demuestra los tests pasando: make test && ./test. Muestra que las funciones obligatorias se llaman y funcionan (y enseña el .s para probar que implementaste la lógica en ASM).
+Si el examinador pregunta por la alternativa 100% ASM, explica claramente:
+“Sí, podría reescribir las llamadas para usar GOT/PLT/RIP-rel de forma manual en ASM; lo descarté por ser muy propenso a errores y por la cantidad de tiempo que tomaría; la funcionalidad resultante sería equivalente. Si desean, puedo mostrar una versión PIC pura en ASM para una función ejemplar”.
+Qué pruebas mostrar:
+Muestra objdump -d libasm.a:ft_read.o o readelf -r si te piden reloc info — para demostrar que sabes del problema y que tu solución lo resuelve.
+Opcional: ejecutar valgrind ./test (si tienes valgrind) para demostrar ausencia de errores de memoria en las rutas que cambiaste.
+Qué decir si te preguntan “¿está haciendo trampas?” o “¿por qué no está todo en ASM?”
+
+Respuesta corta: “No he delegado la funcionalidad principal en C; los wrappers son auxiliares limitados para resolver incompatibilidades de linking/PIE. El trabajo principal (las funciones obligatorias) está íntegramente en ASM, tal y como exige el subject.”
+Si el tribunal insiste en 100% ASM, ofrece convertir la llamada en un único .s de muestra a PIC puro y muéstralo; eso demuestra que entiendes ambas soluciones.
+Ventajas/inconvenientes de cada enfoque (para que lo digas en la defensa)
+
+100% ASM PIC:
+Pros: “puro”, máximo control, cumple literalmente con 'todas las llamadas desde ASM'.
+Contras: laborioso; NASM requiere escribir patrones GOT/PLT/RIP-rel manuales; más probabilidad de errores de reloc; mucho más tiempo.
+Wrappers C (híbrido):
+Pros: rápido, robusto, produce binario PIE-friendly, fácil de justificar técnicamente.
+Contras: añade unos bytes de C, hay que justificar por qué existen (lo cual ya tienes).
+Qué incluir en el repo para que la defensa sea robusta
+
+errno_helper.c (o wrappers que uses). Comentario arriba explicando propósito.
+README.md o sección en Readme.md explicando la decisión técnica en 2-3 frases.
+Un commit con mensaje claro y un párrafo en el PR/commit explicando la razonamiento técnico.
+Un comando listo para demostrar: make fclean all && make test && ./test y, opcional, readelf -r libasm.a o objdump -r libasm.a para mostrar relocaciones.
+Resumen práctico (lo que puedes decir en 30 segundos)
+
+“He implementado todas las funciones obligatorias en ASM (libasm/*.s). Para enlazar como PIE de forma robusta contra la libc he añadido unos wrappers C mínimos (ej. errno_helper.c) que únicamente corrigen el acceso a errno o normalizan las llamadas a libc. Esto no cambia la implementación de las funciones requeridas, solo resuelve incompatibilidades de enlace y me permite cumplir la restricción de no usar -no-pie. Puedo mostrar la implementación ASM y, si desean, convertir una función ejemplo a PIC 100% en ASM.”

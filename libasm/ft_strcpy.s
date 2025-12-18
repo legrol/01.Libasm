@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:16:02 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/18 23:50:20 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,13 +42,15 @@
 ;
 ; ****************************************************************************
 
-;***************************************************
-;	char	*ft_strcpy(char *dst, const char *src);
-;				type	size	name	register
-;	argument	char *	8(ptr)	dst   	rdi
-;	argument	char *	8(ptr)	src   	rsi
-;	variable	char	1		dl
-;***************************************************
+; ****************************************************************************
+;    char *    ft_strcpy(char *dst, const char *src);
+;
+;                type    size    name    register
+;  argument     char *   8(ptr)  dst     rdi    ; destination pointer
+;  argument     char *   8(ptr)  src     rsi    ; source pointer
+;  variable     char     1       tmp     dl     ; temporary byte register used for copy
+;  return       char *   8(ptr)  dst     rax    ; original dst returned in rax
+; ****************************************************************************
 
 section .text
 	global ft_strcpy				; make ft_strcpy visible to the linker

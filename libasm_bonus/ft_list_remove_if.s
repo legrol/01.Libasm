@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 13:35:00 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:16:42 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/18 21:31:14 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -72,9 +72,13 @@
 ; ****************************************************************************
 
 section .text
-	global ft_list_remove_if		; make ft_list_sort visible to the linker
-	extern malloc					; external libc malloc function
-	extern free						; external libc free function
+global ft_list_remove_if		; make ft_list_sort visible to the linker
+extern malloc					; external libc malloc function
+extern free					; external libc free function
+; This file uses minimal C wrappers for allocation/deallocation to avoid
+; PC32 relocations when building PIEs. See `src/malloc_wrapper.c` for the
+; implementations of `malloc_wrapper` and `free_wrapper`.
+extern free_wrapper				; wrapper in src/malloc_wrapper.c
 
 ft_list_remove_if:
 	;********************************
@@ -162,7 +166,8 @@ ft_list_remove_if:
 	;***************************************
 
 	mov rdi, r12					; Load current node pointer into rdi (free parameter)
-	call free						; Call free(current)
+	; call free via wrapper for PIE-friendliness
+	call free_wrapper			; Call free(current) via wrapper
 
 	;*********************************************
 	; Move to next node without updating previous
