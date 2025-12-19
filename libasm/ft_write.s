@@ -80,7 +80,9 @@ ft_write:
 .error:
 	neg rax									; convert -errno to positive errno value
 	mov edi, eax           					; move errno value into edi (32-bit)
-	call set_errno_and_return_minus_one		; set errno and return -1
+	sub rsp, 8					; align stack to 16 before calling C-compiled helper
+	call set_errno_and_return_minus_one			; set errno and return -1
+	add rsp, 8					; restore stack pointer
 
 	;**********************
 	; returns -1 in eax

@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:24:34 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 00:20:41 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 17:55:00 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,18 +65,22 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***************************************************************
+;*****************************************************************************
 ; int	ft_atoi_base(char *str, char *base);
 ;
 ; 			type		size		name		register 
 ; argument	char*		8(ptr)		str			rdi
-; argument	char*		8(ptr)		base		rsi	
+; argument	char*		8(ptr)		base		rsi
 ;
-; variable	int			4(int)		n			r10	
-; variable	int			4(int)		sign		r11	
-; variable	size_t		8(long)		base_num	r12	
-; variable	size_t		8(long)		i			rax
-;***************************************************************
+; variable	char*		8(ptr)		str_ptr		r12    ; pointer to current position in string
+; variable	char*		8(ptr)		base_ptr	r13    ; preserved base pointer for searches
+; variable	int			4(int)		result		ebx    ; accumulated result (32-bit)
+; variable	int			4(int)		digit		eax/ecx; temporary digit/index during conversion
+; variable	int			4(int)		sign_flag	r15d   ; sign flag: 0 = positive, 1 = negative
+; variable	size_t		8(long)		base_len	r14d   ; length of the base returned by check_base_valid
+; temp		required	-			rcx, rdx	temporaries used in validation and searching
+; return	int			4(int)		(return)	rax    ; final converted integer
+;*****************************************************************************
 
 section .text
  	global ft_atoi_base					; make ft_atoi_base visible to the linker

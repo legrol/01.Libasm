@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:27:00 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 00:11:37 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 18:05:31 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -83,13 +83,37 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***********************************************************
+; ****************************************************************************
+
+; NOTE (clarification):
+; - This implementation uses the comparison function pointer `cmp` passed
+;   as the second argument. It calls the function as
+;     (*cmp)(a, b)
+;   by loading `a` into `rdi`, `b` into `rsi` and then executing `call r13`.
+; - Important: this implementation swaps the `data` fields of the nodes
+;   (i.e. the 8-byte pointers stored at offset 0 of each node) rather than
+;   rearranging the `next` links (swapping whole nodes). Both approaches
+;   produce a correctly ordered sequence of element values; here we chose
+;   to swap `data` because it is simpler and avoids handling `prev` and
+;   head-pointer adjustments.
+; ****************************************************************************
+
+; ****************************************************************************
 ; void ft_list_sort(t_list **begin_list, int (*cmp)());
 ;
-; 			type		size		name		register 
-; argument	t_list**	8(ptr)		begin_list	rdi
-; argument	int(**)()	8(ptr)		cmp			rsi
-;***********************************************************
+; 			type		size		name		register
+; argument	t_list**	8(ptr)		begin_list	rdi    ; pointer to head pointer
+; argument	int(*)()	8(ptr)		cmp			rsi    ; comparison function pointer
+;
+; variable	t_list*		8(ptr)		head		r12    ; head = *begin_list (saved)
+; variable	t_list*		8(ptr)		current		r15    ; current node pointer (iterates)
+; variable	t_list*		8(ptr)		next		rbx    ; next node pointer (temporary, callee-saved)
+; variable	int			4(int)		swapped		r14d   ; swap flag (0/1)
+; temp		int			4(int)		cmp_res		eax    ; result returned by cmp
+; temp		regs		-			rcx, rdx	temporaries used when swapping data
+; saved		regs		-			rbx, r12, r13, r14, r15	callee-saved registers preserved by the function
+; return	void		-			-			(no return value)
+; ****************************************************************************
 
 section .text
  	global ft_list_sort						; make ft_list_sort visible to the linker
@@ -127,9 +151,10 @@ ft_list_sort:
  			test rbx, rbx					; check if next is NULL
  			jz .check_swapped				; if next is NULL, end of inner loop
 
- 			;****************************************
- 			; Compare current->data with next->data
- 			;****************************************
+ 			;******************************************************
+ 			; Compare current->data with next->data. Equivalent to 
+			; (*cmp)(list_ptr->data, list_other_ptr->data)
+ 			;******************************************************
 
  			mov rdi, [r15]					; rdi = current->data
  			mov rsi, [rbx]					; rsi = next->data

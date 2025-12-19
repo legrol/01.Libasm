@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/19 16:13:23 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/19 17:07:02 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,13 +269,13 @@ void	ft_atoi_base_test(void)
 
 	printf(CYAN "Test 5: " RESET RED "Invalid Bases (should return 0)" RESET "\n");
 	res1 = ft_atoi_base("42", "01+0");
-	printf("  Base with " MAGENTA "'+'" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "'+' -> '01+0'" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("42", "0");
-	printf("  Base with " MAGENTA "1 char" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "1 char -> '0'" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("42", "01 1");
-	printf("  Base with " MAGENTA "space" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "space -> '01 1'" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("42", "0101");
-	printf("  Base with " MAGENTA "duplicates" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Base with " MAGENTA "duplicates -> '0101'" RESET ": My Result: " YELLOW "%d " RESET "(expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	printf(CYAN "Test 6: " RESET RED "Invalid Input (chars not in base)" RESET "\n");
 	res1 = ft_atoi_base("42F", "0123456789");

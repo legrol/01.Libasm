@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/13 16:03:36 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/18 23:57:03 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 18:12:47 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,9 +38,13 @@
 ;******************************************************************************
 ;    size_t    ft_strlen(const char *s);
 ;
-;                type    size    name    register
-;  argument    char *   8(ptr)  s       rdi
-;  variable    size_t   8(long) len     rax    ; len stored in rax as counter
+;               type     size    name        register
+;  argument    	char *   8(ptr)  s           rdi    ; pointer to string
+;  variable    	size_t   8(long) len         rax    ; length counter stored in rax (returned)
+;  temporary   	byte     1       c           al/ax  ; current character loaded for comparison
+;
+;  clobbers     caller-saved regs: rax, rcx
+;  return       size_t   8(long) len         rax    ; final length in rax
 ;******************************************************************************
 
 section .text

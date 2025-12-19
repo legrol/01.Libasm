@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:26:57 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 00:12:48 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 18:03:35 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,15 +54,17 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***********************************************************
+; ****************************************************************************
 ; int ft_list_size(t_list *begin_list);
 ;
 ; 			type		size		name		register 
-; argument	t_list*		8(ptr)		begin_list	rdi
+; argument	t_list*		8(ptr)		begin_list	rdi    ; pointer to first node
 ;
-; variable	int			4(int)		count		eax
-; variable	t_list*		8(ptr)		current		rdi
-;***********************************************************
+; variable	int			4(int)		count		eax    ; counter (return value)
+; variable	t_list*		8(ptr)		current		rdi    ; current node pointer (updated during loop)
+; temp		none		-			-			(no additional temporaries required)
+; return	int			4(int)		(return)	eax    ; final count in eax
+; ****************************************************************************
 
 section .text
  	global ft_list_size					; make ft_list_size visible to the linker

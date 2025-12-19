@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/18 23:50:20 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 18:10:56 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,11 +45,14 @@
 ; ****************************************************************************
 ;    char *    ft_strcpy(char *dst, const char *src);
 ;
-;                type    size    name    register
-;  argument     char *   8(ptr)  dst     rdi    ; destination pointer
-;  argument     char *   8(ptr)  src     rsi    ; source pointer
-;  variable     char     1       tmp     dl     ; temporary byte register used for copy
-;  return       char *   8(ptr)  dst     rax    ; original dst returned in rax
+;                type    size    name        	register	
+;  argument     char *   8(ptr)  dst         	rdi    ; destination pointer (returned in rax)
+;  argument     char *   8(ptr)  src         	rsi    ; source pointer
+;  variable     size_t   8(long) index       	rcx    ; byte index used for copying
+;  temporary    byte     1       tmp_byte    	dl     ; temporary register for the current byte
+;
+;  clobbers     caller-saved regs: rax, rcx, rdx
+;  return       char *   8(ptr)  original_dst 	rax   ; original dst pointer returned in rax
 ; ****************************************************************************
 
 section .text

@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:26:42 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 16:09:37 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 17:57:30 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,16 +56,20 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***********************************************************
+;*****************************************************************************
 ; void ft_list_push_front(t_list **begin_list, void *data);
 ;
 ; 			type		size		name		register 
-; argument	t_list**	8(ptr)		begin_list	rdi
-; argument	void*		8(ptr)		data		rsi
+; argument	t_list**	8(ptr)		begin_list	rdi    ; pointer to head pointer
+; argument	void*		8(ptr)		data		rsi    ; data pointer to store in new node
 ;
-; variable	t_list*		8(ptr)		new_node	rax
-; variable	t_list*		8(ptr)		temp		rcx
-;***********************************************************
+; variable	t_list*		8(ptr)		new_node	rax    ; temporary result from malloc (also used for loads/stores)
+; variable	t_list*		8(ptr)		temp		rcx    ; temporary new_node pointer while initializing
+; variable	void*		8(ptr)		data_reg	rbx    ; saved data pointer (callee-saved - stored/restored)
+; variable	 t_list**	8(ptr)		head_ptr	r12    ; saved begin_list pointer (callee-saved - stored/restored)
+; temp		temporaries	-			rdx, rcx	used briefly if needed (rcx used above)
+; return	void		-			-			(no return value)
+;*****************************************************************************
 
 ;**************************************************************************
 ; Uses wrapper: `utils/malloc_wrapper.S` (assembly wrapper for malloc)

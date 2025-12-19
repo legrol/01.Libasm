@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 13:35:00 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 14:44:57 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 18:29:09 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,19 +58,61 @@
 ;                                                                             
 ;   Return value:                                                              
 ;     void (no return value)                                                  
-;                                                                             
-;   Registers used:                                                            
-;     rdi (input): **begin_list - pointer to list head pointer                
-;     rsi (input): *data_ref - reference data to compare                      
-;     rdx (input): cmp function pointer                                        
-;     rcx (input): free_fct function pointer                                  
-;     r12: current node pointer                                                
-;     r13: previous node pointer                                               
-;     r14: temporary next pointer for traversal                                
-;     rax: return value from cmp function                                      
-;                                                                             
+;
+;   C equivalent:
+;
+;   void ft_list_remove_if(t_list **begin_list, void *data_ref,
+;                          int (*cmp)(), void (*free_fct)(void *))
+;   {
+;       t_list *current;
+;       t_list *prev;
+;       t_list *tmp;
+;
+;       current = *begin_list;
+;       prev = NULL;
+;       while (current)
+;       {
+;           if ((*cmp)(current->data, data_ref) == 0)
+;           {
+;               tmp = current->next;
+;               (*free_fct)(current->data);
+;               if (prev == NULL)
+;                   *begin_list = tmp;
+;               else
+;                   prev->next = tmp;
+;               free(current);
+;               current = tmp;
+;           }
+;           else
+;           {
+;               prev = current;
+;               current = current->next;
+;           }
+;       }
+;   }
+;
 ; ****************************************************************************
 
+; ****************************************************************************
+; void ft_list_remove_if(t_list **begin_list, void *data_ref,
+;                        int (*cmp)(), void (*free_fct)(void *));
+;
+; 			type		size		name		register
+; argument	t_list**	8(ptr)		begin_list	rdi    ; pointer to head pointer
+; argument	void*		8(ptr)		data_ref	rsi    ; reference data to compare
+; argument	int(*)()	8(ptr)		cmp			rdx    ; comparison function pointer
+; argument	void(*)()	8(ptr)		free_fct	rcx    ; function to free data
+;
+; variable	t_list*		8(ptr)		current		r12    ; current node pointer
+; variable	t_list*		8(ptr)		previous	r13    ; previous node pointer
+; variable	t_list*		8(ptr)		next		r14    ; temporary next pointer
+; variable	void*		8(ptr)		free_fn		r15    ; saved free_fct pointer (preserved)
+; temp		int			4(int)		cmp_res		eax    ; result returned by cmp
+; temp		stack		-			saved_args	[rsp]  ; saved parameters at rsp+0..+24
+; saved		rbx			8			-			rbx    ; callee-saved scratch (preserved)
+; return	void		-			-			-
+; ****************************************************************************
+                                                                           
 ;**************************************************************************
 ; Uses wrapper: `utils/malloc_wrapper.S` (assembly wrapper for malloc/free)
 ;**************************************************************************
