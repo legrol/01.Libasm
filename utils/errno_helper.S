@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    errno_helper.S                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/19 12:29:41 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/19 12:29:47 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 .intel_syntax noprefix  							# Use Intel syntax without '%' prefixes for registers
 # ****************************************************************************
 # errno_helper.S  # File: tiny helper to set errno and return -1

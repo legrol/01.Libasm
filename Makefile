@@ -42,6 +42,7 @@ LIBASM_DIR			=libasm
 OBJ_DIR				=obj
 SRC_DIR				=src
 INC_DIR				=includes
+UTL_DIR				=utils
 
 # ══ Bonus Directories ═══════════════════════════════════════════════════════ #
 #    -----------------                                                         #
@@ -71,11 +72,11 @@ ASM_SRC 			= $(LIBASM_DIR)/ft_strlen.s \
 # ══ Sources Bonus ═══════════════════════════════════════════════════════════ #
 #    -------------                                                             #
 
-ASM_BONUS_SRC 		= $(LIBASM_BONUS_DIR)/ft_atoi_base.s \
-						$(LIBASM_BONUS_DIR)/ft_list_push_front.s \
-						$(LIBASM_BONUS_DIR)/ft_list_size.s \
-						$(LIBASM_BONUS_DIR)/ft_list_sort.s \
-						$(LIBASM_BONUS_DIR)/ft_list_remove_if.s
+ASM_BONUS_SRC 		= $(LIBASM_BONUS_DIR)/ft_atoi_base_bonus.s \
+						$(LIBASM_BONUS_DIR)/ft_list_push_front_bonus.s \
+						$(LIBASM_BONUS_DIR)/ft_list_size_bonus.s \
+						$(LIBASM_BONUS_DIR)/ft_list_sort_bonus.s \
+						$(LIBASM_BONUS_DIR)/ft_list_remove_if_bonus.s
 
 # ══ Objects ═════════════════════════════════════════════════════════════════ #
 #    -------	                                                               #ç
@@ -120,11 +121,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(OBJ_DIR)
 	@sed 's/^#/;/g' $< > $<.tmp
 	@$(NASM) -f elf64 $<.tmp -o $@
 	@rm $<.tmp
-$(OBJ_DIR)/malloc_wrapper.o: $(SRC_DIR)/malloc_wrapper.S $(OBJ_DIR)
+$(OBJ_DIR)/malloc_wrapper.o: $(UTL_DIR)/malloc_wrapper.S $(OBJ_DIR)
 	@echo "$(CYAN)Compiling GAS assembly $<...$(DEF_COLOR)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/errno_helper.o: $(SRC_DIR)/errno_helper.S $(OBJ_DIR)
+$(OBJ_DIR)/errno_helper.o: $(UTL_DIR)/errno_helper.S $(OBJ_DIR)
 	@echo "$(CYAN)Compiling GAS assembly $<...$(DEF_COLOR)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
@@ -152,12 +153,37 @@ bonus: ${NAME} $(OBJ_BONUS)
 # ══ Rules Test ══════════════════════════════════════════════════════════════ #
 #    -----------                                                               #
 
-test: ${NAME} $(OBJ_BONUS) $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
+test: ${NAME} $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
 	@${RM} test
-	@echo "$(YELLOW)Linking test binary (mandatory + bonus objects)...$(DEF_COLOR)"
-	@${CC} ${CFLAGS} ${IFLAGS} -o test $(SRC_DIR)/main.c ${NAME} $(OBJ_BONUS) $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
+	@echo "$(YELLOW)Linking test binary (mandatory objects only)...$(DEF_COLOR)"
+	@${CC} ${CFLAGS} ${IFLAGS} -o test $(SRC_DIR)/main.c ${NAME} $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
 	@echo "$(GREEN)test binary created! $(DEF_COLOR)"
 	@echo ""
+
+test_bonus: bonus $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
+	@${RM} test
+	@echo "$(YELLOW)Linking test binary (bonus-only build)...$(DEF_COLOR)"
+	@${CC} ${CFLAGS} ${IFLAGS} -DINCLUDE_BONUS -o test $(SRC_DIR)/main.c ${NAME} $(OBJ_DIR)/malloc_wrapper.o $(OBJ_DIR)/errno_helper.o
+	@echo "$(GREEN)test binary created! $(DEF_COLOR)"
+	@echo ""
+
+# ══ Exec modes ══════════════════════════════════════════════════════════════ #
+#    -----------                                                               #
+
+# Convenience targets: build+run
+# - run_mandatory: build mandatory and run the mandatory-only test binary
+# - run_bonus: build, add bonus, build bonus-only test binary and run it
+
+run_mandatory:
+	@$(MAKE) --no-print-directory all
+	@$(MAKE) --no-print-directory test
+	@./test
+
+run_bonus:
+	@$(MAKE) --no-print-directory all
+	@$(MAKE) --no-print-directory bonus
+	@$(MAKE) --no-print-directory test_bonus
+	@./test
 
 # ══ Cleaning rules ══════════════════════════════════════════════════════════════ #
 #    -----------                                                               #
@@ -177,4 +203,4 @@ fclean:	clean
 
 re:	fclean all
 
-.PHONY : all clean fclean bonus re test pre_build bonus_separator
+.PHONY : all clean fclean bonus re test pre_build bonus_separator run_mandatory run_bonus

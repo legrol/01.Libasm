@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/18 23:53:23 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 16:08:52 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,12 +53,16 @@
 ;  uses         void*    8(ptr)  dst     rax    ; destination pointer returned in rax
 ;*****************************************************************************
 
+;**************************************************************************
+; Uses wrapper: `utils/malloc_wrapper.S` (assembly wrapper for malloc)
+;**************************************************************************
+
 section .text
 	global ft_strdup			; make ft_strdup visible to the linker
 	
 	;**********************************************************************
 	; This implementation relies on a tiny assembly `malloc_wrapper`
-	; (implemented in `src/malloc_wrapper.S`) which forwards to libc's
+	; (implemented in `utils/malloc_wrapper.S`) which forwards to libc's
 	; `malloc`. The wrapper is assembled and linked only into the `test`
 	; binary, so `libasm.a` remains mandatory-only and purely assembly.
 	;**********************************************************************
@@ -77,9 +81,9 @@ ft_strdup:
 	;**********************************************************************
 	; call the assembly wrapper which forwards to libc malloc
 	;**********************************************************************
-	call malloc_wrapper		; allocate memory via wrapper, return pointer in rax
-	test rax, rax			; check if malloc returned NULL
-	je .alloc_fail			; if allocation failed, jump to error handling
+	call malloc_wrapper			; allocate memory via wrapper, return pointer in rax
+	test rax, rax				; check if malloc returned NULL
+	je .alloc_fail				; if allocation failed, jump to error handling
 
 	mov rdi, rax				; set destination pointer (dst) for ft_strcpy
 	mov rsi, rbx				; restore source pointer from rbx

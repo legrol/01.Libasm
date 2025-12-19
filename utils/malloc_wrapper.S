@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    malloc_wrapper.S                                   :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/19 12:29:55 by rdel-olm          #+#    #+#              #
+#    Updated: 2025/12/19 12:30:00 by rdel-olm         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 .intel_syntax noprefix  							# Use Intel syntax without '%' register prefixes
 # ****************************************************************************
 # malloc_wrapper.S  # File: minimal wrappers for malloc and free

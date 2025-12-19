@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/18 23:52:56 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 14:43:25 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,12 +56,16 @@
 ;  return       ssize_t 8(long) ret     rax    ; bytes read or -1 on error
 ;*****************************************************************************
 
+;**************************************************************************
+; Uses helper: `utils/errno_helper.S` (assembly helper to set errno)
+;**************************************************************************
+
 section .text
 	global ft_read							; make ft_read visible to the linker
 
 	;************************************************************************
 	; For PIE builds we provide a tiny assembly helper that sets errno and
-	; returns -1. The helper is implemented in `src/errno_helper.S` and is
+	; returns -1. The helper is implemented in `utils/errno_helper.S` and is
 	; assembled and linked only into the `test` binary (not into `libasm.a`).
 	;************************************************************************
 	extern set_errno_and_return_minus_one	; Helper ASM: sets errno and returns -1

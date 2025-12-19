@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    ft_list_sort.s                                     :+:      :+:    :+:    #
+#    ft_list_sort_bonus.s                               :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:27:00 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/17 23:16:40 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/19 00:11:37 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@
 ;                                                                             
 ;   Sorts the linked list in ascending order using a comparison function.     
 ;                                                                             
-;   - Uses bubble sort algorithm.                                             
+;   - Uses bubble sort algorithm.                                              
 ;   - Calls cmp(node1->data, node2->data) to compare elements.                
 ;   - Swaps nodes if comparison returns positive value (out of order).        
 ;   - Continues until no more swaps are needed (list is sorted).              
@@ -28,54 +28,54 @@
 ;         struct s_list *next; (offset 8, 8 bytes)                            
 ;     } (total size: 16 bytes)                                                
 ;                                                                             
-;   Comparison function:                                                      
+;   Comparison function:                                                       
 ;     int (*cmp)(void *a, void *b)                                            
 ;       Returns: < 0 if a < b (sorted)                                        
-;       Returns: = 0 if a == b (sorted)                                       
-;       Returns: > 0 if a > b (swap needed)                                   
+;       Returns: = 0 if a == b (sorted)                                        
+;       Returns: > 0 if a > b (swap needed)                                    
 ;                                                                             
 ;   Algorithm (Bubble Sort):                                                  
-;     swapped = 1                                                             
+;     swapped = 1                                                              
 ;     while (swapped):                                                        
 ;         swapped = 0                                                         
-;         current = begin_list                                                
-;         while (current && current->next):                                   
+;         current = *begin_list                                                
+;         while (current && current->next):                                    
 ;             if (cmp(current->data, current->next->data) > 0):               
-;                 swap nodes                                                  
+;                 swap nodes                                                 
 ;                 swapped = 1                                                 
-;             else:                                                           
-;                 current = current->next                                     
+;             else:                                                            
+;                 current = current->next                                      
 ;                                                                             
-;   Return value:                                                             
+;   Return value:                                                              
 ;     void (no return value)                                                  
 ;                                                                             
-;   C equivalent:                                                             
+;   C equivalent:                                                              
 ;                                                                             
 ;   void ft_list_sort(t_list **begin_list, int (*cmp)())                      
 ;   {                                                                         
-;       int swapped;                                                          
-;       t_list *current;                                                      
+;       int swapped;                                                           
+;       t_list *current;                                                       
 ;       t_list *temp;                                                         
 ;                                                                             
-;       swapped = 1;                                                          
-;       while (swapped)                                                       
+;       swapped = 1;                                                           
+;       while (swapped)                                                        
 ;       {                                                                     
-;           swapped = 0;                                                      
-;           current = *begin_list;                                            
+;           swapped = 0;                                                       
+;           current = *begin_list;                                             
 ;           while (current && current->next)                                  
 ;           {                                                                 
 ;               if (cmp(current->data, current->next->data) > 0)              
-;               {                                                             
-;                   temp = current->next;                                     
-;                   current->next = temp->next;                               
-;                   temp->next = current;                                     
-;                   if (current == *begin_list)                               
-;                       *begin_list = temp;                                   
-;                   else                                                      
+;               {                                                              
+;                   temp = current->next;                                      
+;                   current->next = temp->next;                                
+;                   temp->next = current;                                      
+;                   if (current == *begin_list)                                
+;                       *begin_list = temp;                                    
+;                   else                                                       
 ;                       prev->next = temp;                                    
-;                   swapped = 1;                                              
-;               }                                                             
-;               else                                                          
+;                   swapped = 1;                                               
+;               }                                                              
+;               else                                                           
 ;                   current = current->next;                                  
 ;           }                                                                 
 ;       }                                                                     
@@ -86,85 +86,85 @@
 ;***********************************************************
 ; void ft_list_sort(t_list **begin_list, int (*cmp)());
 ;
-;			type		size		name		register 
+; 			type		size		name		register 
 ; argument	t_list**	8(ptr)		begin_list	rdi
 ; argument	int(**)()	8(ptr)		cmp			rsi
 ;***********************************************************
 
 section .text
-	global ft_list_sort								; make ft_list_sort visible to the linker
+ 	global ft_list_sort						; make ft_list_sort visible to the linker
 
 ft_list_sort:
-	push rbx										; save rbx
-	push r12										; save r12
-	push r13										; save r13
-	push r14										; save r14
-	push r15										; save r15
+ 	push rbx								; save rbx
+ 	push r12								; save r12
+ 	push r13								; save r13
+ 	push r14								; save r14
+ 	push r15								; save r15
 
-	mov r12, [rdi]									; r12 = *begin_list (head)
-	mov r13, rsi									; r13 = cmp function
+ 	mov r12, [rdi]							; r12 = *begin_list (head)
+ 	mov r13, rsi							; r13 = cmp function
 
-	test r12, r12									; check if head is NULL
-	jz .done										; if empty list, return
+ 	test r12, r12							; check if head is NULL
+ 	jz .done								; if empty list, return
 
-	;************************************************
-	; Outer loop: repeat until no swaps occur
-	;************************************************
+ 	;************************************************
+ 	; Outer loop: repeat until no swaps occur
+ 	;************************************************
 
-	.outer_loop:
-		xor r14, r14								; swapped = 0
-		mov r15, r12								; current = head
+ 	.outer_loop:
+ 		xor r14, r14						; swapped = 0
+ 		mov r15, r12						; current = head
 
-		;*******************************************
-		; Inner loop: iterate through list
-		;*******************************************
+ 		;*******************************************
+ 		; Inner loop: iterate through list
+ 		;*******************************************
 
-		.inner_loop:
-			test r15, r15							; check if current is NULL
-			jz .check_swapped						; if end of list, check if swapped
+ 		.inner_loop:
+ 			test r15, r15					; check if current is NULL
+ 			jz .check_swapped				; if end of list, check if swapped
 
-			mov rbx, [r15 + 8]						; rbx = current->next
-			test rbx, rbx							; check if next is NULL
-			jz .check_swapped						; if next is NULL, end of inner loop
+ 			mov rbx, [r15 + 8]				; rbx = current->next
+ 			test rbx, rbx					; check if next is NULL
+ 			jz .check_swapped				; if next is NULL, end of inner loop
 
-			;****************************************
-			; Compare current->data with next->data
-			;****************************************
+ 			;****************************************
+ 			; Compare current->data with next->data
+ 			;****************************************
 
-			mov rdi, [r15]							; rdi = current->data
-			mov rsi, [rbx]							; rsi = next->data
+ 			mov rdi, [r15]					; rdi = current->data
+ 			mov rsi, [rbx]					; rsi = next->data
 			
-			call r13								; call cmp(data1, data2)
+ 			call r13						; call cmp(data1, data2)
 			
-			cmp eax, 0								; check result
-			jle .next_node							; if <= 0, correct order
+ 			cmp eax, 0						; check result
+ 			jle .next_node					; if <= 0, correct order
 
-			;****************************************
-			; Swap data
-			;****************************************
+ 			;****************************************
+ 			; Swap data
+ 			;****************************************
 
-			mov rcx, [r15]							; rcx = current->data
-			mov rdx, [rbx]							; rdx = next->data
-			mov [r15], rdx							; current->data = next->data
-			mov [rbx], rcx							; next->data = current->data
-			
-			mov r14, 1								; swapped = 1
+ 			mov rcx, [r15]					; rcx = current->data
+ 			mov rdx, [rbx]					; rdx = next->data
+ 			mov [r15], rdx					; current->data = next->data
+ 			mov [rbx], rcx					; next->data = current->data
 
-		.next_node:
-			mov r15, rbx							; current = next
-			jmp .inner_loop							; continue inner loop
+ 			mov r14, 1						; swapped = 1
 
-	.check_swapped:
-		test r14, r14								; check if swapped
-		jnz .outer_loop								; if swapped, repeat outer loop
+ 		.next_node:
+ 			mov r15, rbx					; current = next
+ 			jmp .inner_loop					; continue inner loop
 
-	.done:
-		pop r15										; restore r15
-		pop r14										; restore r14
-		pop r13										; restore r13
-		pop r12										; restore r12
-		pop rbx										; restore rbx
-		ret											; return to caller
+ 	.check_swapped:
+ 		test r14, r14						; check if swapped
+ 		jnz .outer_loop						; if swapped, repeat outer loop
+
+ 	.done:
+ 		pop r15								; restore r15
+ 		pop r14								; restore r14
+ 		pop r13								; restore r13
+ 		pop r12								; restore r12
+ 		pop rbx								; restore rbx
+ 		ret									; return to caller
 
 ; ****************************************************************************
 ; Stack execution protection

@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/18 16:22:36 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/19 16:13:23 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,6 @@ void	check_strcmp(char *s1, char *s2)
 	printf(CYAN "My Function returned = %d\n" RESET, ret1);
 	printf(GREEN "Real Function returned = %d\n\n" RESET, ret2);
 
-/*	if ((ret1 > 0 && ret2 > 0) || (ret1 < 0 && ret2 < 0) || (ret1 == 0 && ret2 == 0))
-		printf(GREEN "✓ OK (Same sign)\n\n" RESET);
-	else
-		printf(RED "✗ WRONG (Different sign)\n\n" RESET); */
 }
 
 /* ************************************************************************************************************************** */
@@ -79,7 +75,7 @@ void	ft_strcmp_test(void)
 	check_strcmp("abcde", "abcde");
 	check_strcmp("abcde", "abdde");
 	check_strcmp("abcde", "abbde");
-	check_strcmp("abcde", "abcde"); // "with null bytes" case from before was just this
+	check_strcmp("abcde", "abcd ");
 	check_strcmp("abcde", "g");
 	check_strcmp("abcde", "0");
 }
@@ -227,18 +223,21 @@ void	ft_strdup_test()
 		return;
 	}
 	printf(CYAN "My Function: \"%s\" (len=%lu)\n" RESET, dup5, strlen(dup5));
-	printf(GREEN "Real Function: \"%s\" (len=%lu)\n" RESET, dup6, strlen(dup6));
+	printf(GREEN "Real Function: \"%s\" (len=%lu)\n\n" RESET, dup6, strlen(dup6));
 	free(dup5);
 	free(dup6);
 }
 
 /* ************************************************************************************************************************** */
 
+/* Bonus tests and helpers: compiled only when INCLUDE_BONUS is defined */
+#ifdef INCLUDE_BONUS
+
 void	ft_atoi_base_test(void)
 {
 	int	res1, res2;
 
-	printf("\n" BLUE "========================\n");
+	printf(BLUE "========================\n");
 	printf("ft_atoi_base test\n");
 	printf("========================\n" RESET "\n");
 
@@ -460,22 +459,27 @@ void	ft_list_remove_if_test(void)
 
 /* ************************************************************************************************************************** */
 
+
+#endif /* INCLUDE_BONUS */
+
 int	main(void)
 {
-	/* mandatory functions */
-	ft_strlen_test();
-	ft_strcpy_test();
-	ft_strcmp_test();
-	ft_write_test();
-	ft_read_test();
-	ft_strdup_test();
-
-	/* bonus functions */
-	ft_atoi_base_test();
-	ft_list_push_front_test();
-	ft_list_size_test();
-	ft_list_sort_test();
-	ft_list_remove_if_test();
+	#ifndef INCLUDE_BONUS
+		/* mandatory functions */
+		ft_strlen_test();
+		ft_strcpy_test();
+		ft_strcmp_test();
+		ft_write_test();
+		ft_read_test();
+		ft_strdup_test();
+	#else
+		/* only bonus functions when built with -DINCLUDE_BONUS */
+		ft_atoi_base_test();
+		ft_list_push_front_test();
+		ft_list_size_test();
+		ft_list_sort_test();
+		ft_list_remove_if_test();
+	#endif
 
 	return (0);
 }
