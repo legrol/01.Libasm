@@ -35,6 +35,7 @@ NASM				= nasm
 RM					= rm -f
 MKD					= mkdir -p
 
+
 # ══ Directories ═════════════════════════════════════════════════════════════ #
 #    -----------                                                               #
 
@@ -54,6 +55,7 @@ LIBASM_BONUS_DIR	=libasm_bonus
 
 CFLAGS 				= -Wall -Werror -Wextra
 IFLAGS				= -I${INC_DIR}
+NASMFLAGS			= -f elf64
 
 # ══ Flags Bonus══════════════════════════════════════════════════════════════ #
 #    -----------                                                               #
@@ -114,12 +116,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(OBJ_DIR)
 $(OBJ_DIR)/%.o: $(LIBASM_DIR)/%.s $(OBJ_DIR)
 	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
 	@sed 's/^#/;/g' $< > $<.tmp
-	@$(NASM) -f elf64 $<.tmp -o $@
+	@$(NASM) $(NASMFLAGS) $<.tmp -o $@
 	@rm $<.tmp
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(OBJ_DIR)
 	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
 	@sed 's/^#/;/g' $< > $<.tmp
-	@$(NASM) -f elf64 $<.tmp -o $@
+	@$(NASM) $(NASMFLAGS) $<.tmp -o $@
 	@rm $<.tmp
 $(OBJ_DIR)/malloc_wrapper.o: $(UTL_DIR)/malloc_wrapper.S $(OBJ_DIR)
 	@echo "$(CYAN)Compiling GAS assembly $<...$(DEF_COLOR)"
@@ -135,7 +137,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.S $(OBJ_DIR)
 $(OBJ_DIR)/%.o: $(LIBASM_BONUS_DIR)/%.s $(OBJ_DIR)
 	@echo "$(CYAN)Assembling $<...$(DEF_COLOR)"
 	@sed 's/^#/;/g' $< > $<.tmp
-	@$(NASM) -f elf64 $<.tmp -o $@
+	@$(NASM) $(NASMFLAGS) $<.tmp -o $@
 	@rm $<.tmp
 $(OBJ_DIR):
 	@$(MKD) $(OBJ_DIR)
