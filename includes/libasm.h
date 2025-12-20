@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:21:18 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/17 21:14:30 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/20 12:30:17 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <errno.h>
+# include <fcntl.h>
 
 // ============================================================================
 // Type definitions

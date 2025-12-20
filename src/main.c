@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/19 17:07:02 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/20 12:59:00 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void	ft_strcmp_test(void)
 	check_strcmp("abcde", "abdde");
 	check_strcmp("abcde", "abbde");
 	check_strcmp("abcde", "abcd ");
+	check_strcmp("abcd", "abcde");
 	check_strcmp("abcde", "g");
 	check_strcmp("abcde", "0");
 }
@@ -94,25 +95,44 @@ void	ft_write_test()
 	printf(MAGENTA);
 	fflush(stdout);
 	ret1 = ft_write(1, "Hello from 42Malaga!\n", 22);
+	{
+		int dn = open("/dev/null", O_WRONLY);
+		if (dn >= 0) {
+			ret2 = write(dn, "Hello from 42Malaga!\n", 22);
+			close(dn);
+		} else {
+			/* fallback: write to stdout if /dev/null not available */
+			ret2 = write(1, "Hello from 42Malaga!\n", 22);
+		}
+	}
 	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret1);
-	printf(GREEN "Real Function returned: %ld\n\n" RESET, (long)ret1);
+	printf(GREEN "Real Function returned: %ld\n\n" RESET, (long)ret2);
 
 	printf("Writing " RED "'Hello from 42!'" RESET " to stdout:\n");
 	printf(MAGENTA);
 	fflush(stdout);
-	ret2 = write(1, "Hello from 42!\n", 16);
-	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret2);
+	ret1 = ft_write(1, "Hello from 42!\n", 16);
+	{
+		int dn = open("/dev/null", O_WRONLY);
+		if (dn >= 0) {
+			ret2 = write(dn, "Hello from 42!\n", 16);
+			close(dn);
+		} else {
+			ret2 = write(1, "Hello from 42!\n", 16);
+		}
+	}
+	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret1);
 	printf(RESET GREEN "Real Function returned: %ld\n" RESET, (long)ret2);
 
-	printf("\nTesting invalid fd " RED "(-1):\n" RESET);
+	printf("\nTesting invalid fd " RED "(-42):\n" RESET);
 
 	errno = 0;
-	ret1 = ft_write(-1, "test", 4);
+	ret1 = ft_write(-42, "test", 4);
 	printf(RESET CYAN "My Function returned: %ld\n" RESET, (long)ret1);
 	printf(MAGENTA "My errno: %d (%s)\n" RESET, errno, strerror(errno));
 
 	errno = 0;
-	ret2 = write(-1, "test", 4);
+	ret2 = write(-42, "test", 4);
 	printf(RESET GREEN "Real Function returned: %ld\n" RESET, (long)ret2);
 	printf(MAGENTA "Real errno: %d (%s)\n" RESET, errno, strerror(errno));
 }
@@ -159,14 +179,14 @@ void	ft_read_test()
 		buf2[r2 - 1] = '\0';
 	printf(GREEN "Real Function read %ld bytes: '" MAGENTA "%s" GREEN "'\n" RESET, (long)r2, buf2);
 
-	printf("\nTesting invalid fd " RED "(-1):\n" RESET);	
+	printf("\nTesting invalid fd " RED "(-42):\n" RESET); 	
 	errno = 0;
-	r1 = ft_read(-1, buf1, 5);
+	r1 = ft_read(-42, buf1, 5);
 	printf(CYAN "My Function returned: %ld\n" RESET, (long)r1);
 	printf(MAGENTA "My errno: %d (%s)\n" RESET, errno, strerror(errno));
 
 	errno = 0;
-	r2 = read(-1, buf2, 5);
+	r2 = read(-42, buf2, 5);
 	printf(GREEN "Real Function returned: %ld\n" RESET, (long)r2);
 	printf(MAGENTA "Real errno: %d (%s)\n" RESET, errno, strerror(errno));
 }

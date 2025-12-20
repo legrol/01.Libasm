@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/13 16:03:28 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 14:43:59 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/20 00:11:18 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,16 +44,19 @@
 ;                                                                             
 ; ****************************************************************************
 
-;***************************************************************
+;**************************************************************************
 ;    ssize_t ft_write(int fd, const void *buf, size_t count);
 ;
-;                type    size    name    register
-;  argument     int     4(int)  fd      rdi    ; file descriptor (in rdi)
-;  argument     void*   8(ptr)  buf     rsi    ; buffer pointer (in rsi)
-;  argument     size_t  8(long) count   rdx    ; number of bytes (in rdx)
-;  syscall      write   number  1       rax    ; syscall number in rax
-;  return       ssize_t 8(long) ret     rax    ; bytes written or -1 on error
-;***************************************************************
+;                 	type    size    name        register
+;  argument       	int     4(int)  fd          rdi    		; file descriptor (in rdi)
+;  argument       	void*   8(ptr)  buf         rsi    		; buffer pointer (in rsi)
+;  argument       	size_t  8(long) count       rdx    		; number of bytes (in rdx)
+;  syscall        	write   number  1          	rax    		; syscall number in rax
+;  error handling 	int    	4(int)  errno_in    edi    		; when syscall < 0: errno = -rax passed in edi to helper
+;  helpers     		set_errno_and_return_minus_one  extern  ; helper sets errno and returns -1 (called with edi)
+;  stack_adjustment rsp  	8(bytes)               			; caller performs `sub rsp,8`/`add rsp,8` around helper call to maintain 16-byte alignment
+;  return       	ssize_t 8(long) ret         rax    		; bytes written or -1 on error
+;**************************************************************************
 
 ;**************************************************************************
 ; Uses helper: `utils/errno_helper.S` (assembly helper to set errno)
@@ -80,9 +83,9 @@ ft_write:
 .error:
 	neg rax									; convert -errno to positive errno value
 	mov edi, eax           					; move errno value into edi (32-bit)
-	sub rsp, 8					; align stack to 16 before calling C-compiled helper
-	call set_errno_and_return_minus_one			; set errno and return -1
-	add rsp, 8					; restore stack pointer
+	sub rsp, 8								; align stack to 16 before calling C-compiled helper
+	call set_errno_and_return_minus_one		; set errno and return -1
+	add rsp, 8								; restore stack pointer
 
 	;**********************
 	; returns -1 in eax

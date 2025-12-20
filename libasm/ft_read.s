@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 18:09:28 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/20 00:16:02 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -87,7 +87,9 @@ ft_read:
 .error:
 	neg rax									; convert -errno to positive errno value
 	mov edi, eax							; move errno into edi (32-bit)
+	sub rsp, 8								; align stack to 16 before calling helper
 	call set_errno_and_return_minus_one		; set errno and return -1
+	add rsp, 8								; restore stack pointer
 
 	;**********************
 	; returns -1 in eax

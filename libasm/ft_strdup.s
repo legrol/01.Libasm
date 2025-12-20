@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 21:51:23 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 18:12:02 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/20 14:20:01 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,11 @@
 ;                                                                             
 ;   char *ft_strdup(const char *s)                                            
 ;   {                                                                         
-;       size_t i;                                                           
+;       size_t len;                                                           
 ;       char *dst;                                                            
 ;                                                                             
-;       i = ft_strlen(s) + 1;                                               
-;       dst = (char *)malloc(i);                                            
+;       len = ft_strlen(s) + 1;                                               
+;       dst = (char *)malloc(len);                                            
 ;       if (!dst)                                                             
 ;           return NULL;                                                      
 ;       ft_strcpy(dst, s);                                                    
@@ -46,17 +46,18 @@
 ;*****************************************************************************
 ;    char * ft_strdup(const char *s);
 ;
-;                type    size    name        register 
-;  argument     char *   8(ptr)  s           rdi    ; source string pointer (preserved in rbx)
-;  variable     size_t   8(long) len         rax    ; length returned by ft_strlen (len + 1 used for malloc)
-;  saved        ptr      8(ptr)  src_save    rbx    ; saved original source pointer (callee-saved reg)
+;                type    size    name        	register 
+;  argument     char *   8(ptr)  s           	rdi    ; source string pointer (preserved in rbx until moved to rsi)
+;  call-arg     char *   8(ptr)  src_for_copy 	rsi    ; source pointer moved into `rsi` before calling `ft_strcpy`
+;  variable     size_t   8(long) len         	rax    ; length returned by ft_strlen (len + 1 used for malloc)
+;  saved        ptr      8(ptr)  src_save    	rbx    ; saved original source pointer (callee-saved reg)
 ;
-;  helpers     	malloc_wrapper (extern)      call via `call malloc_wrapper` ; returns pointer in rax
-;  calls        ft_strlen, ft_strcpy         external calls (assembled/linked)
+;  helpers     	malloc_wrapper (extern)      	call via `call malloc_wrapper` ; returns pointer in rax
+;  calls        ft_strlen, ft_strcpy         	external calls (assembled/linked)
 ;  clobbers     caller-saved regs: rax, rcx, rdx
 ;
-;  temp         ptr      8(ptr)  dst         rax    ; destination pointer from malloc returned in rax
-;  return       char *   8(ptr)  dst         rax    ; pointer to duplicated string or NULL (rax==0)
+;  temp         ptr      8(ptr)  dst         	rax    ; destination pointer from malloc returned in rax
+;  return       char *   8(ptr)  dst         	rax    ; pointer to duplicated string or NULL (rax==0)
 ;*****************************************************************************
 
 ;**************************************************************************
