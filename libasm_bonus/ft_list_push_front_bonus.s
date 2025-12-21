@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:26:42 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 17:57:30 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/21 13:46:16 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,7 +77,6 @@
 
 section .text
  	global ft_list_push_front			; make ft_list_push_front visible to the linker
-	extern malloc						; external libc malloc function
 
 	;**********************************************************************
 	; This assembler implementation calls `malloc_wrapper` (assembly) which

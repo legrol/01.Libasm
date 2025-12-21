@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/20 23:20:26 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/21 13:43:45 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,6 +230,8 @@ void	ft_strdup_test()
 	}
 	printf(CYAN "My Function: \"%s\"\n" RESET, dup3);
 	printf(GREEN "Real Function: \"%s\"\n" RESET, dup4);
+	dup3[0] = 'X';
+	printf("Different pointers (new memory)? %s\n", (dup3 != dup4) ? GREEN "YES (OK)" RESET : RED "NO (WRONG)" RESET);
 	dup3[0] = 'X';
 	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup3);
 	printf(MAGENTA "Printing original: \"%s\"\n" RESET, dup4);
