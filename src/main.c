@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/21 13:43:45 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/21 19:15:27 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,8 +217,8 @@ void	ft_strdup_test()
 	dup1[0] = 'X';
 	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup1);
 	printf(MAGENTA "Printing original: \"%s\"\n" RESET, dup2);
-	free(dup1);
-	free(dup2);
+	free_wrapper(dup1);
+	free_wrapper(dup2);
 
 	printf("\nDuplicating " RED "\"Libasm Project\"" RESET ":\n");
 	dup3 = ft_strdup("Libasm Project");
@@ -235,8 +235,8 @@ void	ft_strdup_test()
 	dup3[0] = 'X';
 	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup3);
 	printf(MAGENTA "Printing original: \"%s\"\n" RESET, dup4);
-	free(dup3);
-	free(dup4);
+	free_wrapper(dup3);
+	free_wrapper(dup4);
 
 	printf("\nDuplicating " RED "empty string \"\"" RESET ":\n");
 	dup5 = ft_strdup("");
@@ -248,8 +248,8 @@ void	ft_strdup_test()
 	}
 	printf(CYAN "My Function: \"%s\" (len=%lu)\n" RESET, dup5, strlen(dup5));
 	printf(GREEN "Real Function: \"%s\" (len=%lu)\n\n" RESET, dup6, strlen(dup6));
-	free(dup5);
-	free(dup6);
+	free_wrapper(dup5);
+	free_wrapper(dup6);
 }
 
 /* ************************************************************************************************************************** */
@@ -322,7 +322,7 @@ void	free_list(t_list *list)
 	{
 		tmp = list;
 		list = list->next;
-		free(tmp);
+		free_wrapper(tmp);
 	}
 }
 
@@ -342,21 +342,37 @@ void	ft_list_push_front_test(void)
 
 	ft_list_push_front(&list, &data1);
 	printf("After push(" RED "42" RESET "): list points to node with data " GREEN "✓\n" RESET);
-	printf("  node->data = " YELLOW "%d " RESET "(expected 42) %s\n", *(int *)list->data, (*(int *)list->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  node->next = " CYAN "NULL" RESET " (expected NULL) %s\n\n", (list->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  node->data = " YELLOW "%d " RESET "(expected 42) %s\n",
+		(list ? *(int *)list->data : 0),
+		(list && *(int *)list->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  node->next = " CYAN "NULL" RESET " (expected NULL) %s\n\n",
+		(list && list->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	ft_list_push_front(&list, &data2);
 	printf("After push(" RED "100" RESET "): new node at head\n");
-	printf("  head->data = " YELLOW "%d " RESET "(expected 100) %s\n", *(int *)list->data, (*(int *)list->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->data = " YELLOW "%d " RESET "(expected 42) %s\n", *(int *)list->next->data, (*(int *)list->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->next = " CYAN "NULL" RESET " %s\n\n", (list->next->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
+	/* guard dereferences in case implementation under test is broken */
+	printf("  head->data = " YELLOW "%d " RESET "(expected 100) %s\n",
+		(list ? *(int *)list->data : 0),
+		(list && *(int *)list->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->data = " YELLOW "%d " RESET "(expected 42) %s\n",
+		(list && list->next) ? *(int *)list->next->data : 0,
+		(list && list->next && *(int *)list->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->next = " CYAN "NULL" RESET " %s\n\n",
+		(list && list->next && list->next->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	ft_list_push_front(&list, &data3);
 	printf("After push(" RED "200" RESET "): new node at head\n");
-	printf("  head->data = " YELLOW "%d " RESET "(expected 200) %s\n", *(int *)list->data, (*(int *)list->data == 200) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->data = " YELLOW "%d " RESET "(expected 100) %s\n", *(int *)list->next->data, (*(int *)list->next->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->next->data = " YELLOW "%d " RESET "(expected 42) %s\n", *(int *)list->next->next->data, (*(int *)list->next->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
-	printf("  head->next->next->next = " CYAN "NULL" RESET " (expected NULL) %s\n\n", (list->next->next->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->data = " YELLOW "%d " RESET "(expected 200) %s\n",
+		(list ? *(int *)list->data : 0),
+		(list && *(int *)list->data == 200) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->data = " YELLOW "%d " RESET "(expected 100) %s\n",
+		(list && list->next) ? *(int *)list->next->data : 0,
+		(list && list->next && *(int *)list->next->data == 100) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->next->data = " YELLOW "%d " RESET "(expected 42) %s\n",
+		(list && list->next && list->next->next) ? *(int *)list->next->next->data : 0,
+		(list && list->next && list->next->next && *(int *)list->next->next->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  head->next->next->next = " CYAN "NULL" RESET " (expected NULL) %s\n\n",
+		(list && list->next && list->next->next && list->next->next->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	free_list(list);
 }
@@ -421,12 +437,20 @@ void	ft_list_sort_test(void)
 	ft_list_push_front(&list, &data4);
 
 	printf("Original list (as inserted): " RED "5 -> 99 -> 10 -> 42\n" RESET);
-	printf("  Values: " CYAN "%d, %d, %d, %d\n\n" RESET, *(int *)list->data, *(int *)list->next->data, *(int *)list->next->next->data, *(int *)list->next->next->next->data);
+	printf("  Values: " CYAN "%d, %d, %d, %d\n\n" RESET,
+		(list ? *(int *)list->data : 0),
+		(list && list->next) ? *(int *)list->next->data : 0,
+		(list && list->next && list->next->next) ? *(int *)list->next->next->data : 0,
+		(list && list->next && list->next->next && list->next->next->next) ? *(int *)list->next->next->next->data : 0);
 
 	ft_list_sort(&list, &ft_compare_ints);
 
 	printf("After sorting (ascending): " RED "5 -> 10 -> 42 -> 99\n" RESET);
-	printf("  Values: " CYAN "%d, %d, %d, %d\n" RESET, *(int *)list->data, *(int *)list->next->data, *(int *)list->next->next->data, *(int *)list->next->next->next->data);
+	printf("  Values: " CYAN "%d, %d, %d, %d\n" RESET,
+		(list ? *(int *)list->data : 0),
+		(list && list->next) ? *(int *)list->next->data : 0,
+		(list && list->next && list->next->next) ? *(int *)list->next->next->data : 0,
+		(list && list->next && list->next->next && list->next->next->next) ? *(int *)list->next->next->next->data : 0);
 	int sorted = (*(int *)list->data == 5 && *(int *)list->next->data == 10 && 
 				  *(int *)list->next->next->data == 42 && *(int *)list->next->next->next->data == 99);
 	printf("  Result: %s\n\n", sorted ? GREEN "✓ Correctly sorted" RESET : RED "✗ Not sorted" RESET);
@@ -468,8 +492,12 @@ void	ft_list_remove_if_test(void)
 	ft_list_push_front(&list, &data4);
 
 	printf("Original list: " RED "42 -> 42 -> 10 -> 42\n" RESET);
-	printf("  Values: " CYAN "%d, %d, %d, %d " RESET "(size: " GREEN "%d" RESET ")\n", *(int *)list->data, *(int *)list->next->data, 
-			*(int *)list->next->next->data, *(int *)list->next->next->next->data, ft_list_size(list));
+	printf("  Values: " CYAN "%d, %d, %d, %d " RESET "(size: " GREEN "%d" RESET ")\n",
+		(list ? *(int *)list->data : 0),
+		(list && list->next) ? *(int *)list->next->data : 0,
+		(list && list->next && list->next->next) ? *(int *)list->next->next->data : 0,
+		(list && list->next && list->next->next && list->next->next->next) ? *(int *)list->next->next->next->data : 0,
+		ft_list_size(list));
 	printf("  Removing all nodes with value " YELLOW "42" RESET "\n\n");
 
 	ft_list_remove_if(&list, &remove_val, &ft_compare_remove, &ft_free_int);

@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:21:18 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/21 13:33:48 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/21 19:14:56 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@
 // ============================================================================
 typedef struct s_list
 {
-	void	*data;
-	struct 	s_list	*next;
+	void	*data;				//offset 0 (8 bytes)
+	struct 	s_list	*next;		//offset 8 (8 bytes)
 }	t_list;
 
 // ============================================================================
@@ -57,5 +57,12 @@ void	ft_list_push_front(t_list **begin_list, void *data);
 int		ft_list_size(t_list *begin_list);
 void	ft_list_sort(t_list **begin_list, int (*cmp)());
 void	ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)(), void (*free_fct)(void *));
+
+
+// ============================================================================
+// Others functions
+// Declare the assembly wrapper for free implemented in `utils/malloc_wrapper.S`
+// ============================================================================
+void	free_wrapper(void *ptr);
 
 #endif
