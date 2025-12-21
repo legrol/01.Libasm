@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/20 12:59:00 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/20 23:20:26 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,7 @@ void	ft_strdup_test()
 	printf("Different pointers (new memory)? %s\n", (dup1 != dup2) ? GREEN "YES (OK)" RESET : RED "NO (WRONG)" RESET);
 	dup1[0] = 'X';
 	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup1);
+	printf(MAGENTA "Printing original: \"%s\"\n" RESET, dup2);
 	free(dup1);
 	free(dup2);
 
@@ -231,6 +232,7 @@ void	ft_strdup_test()
 	printf(GREEN "Real Function: \"%s\"\n" RESET, dup4);
 	dup3[0] = 'X';
 	printf(MAGENTA "Modifying copy (first char to 'X'): \"%s\"\n" RESET, dup3);
+	printf(MAGENTA "Printing original: \"%s\"\n" RESET, dup4);
 	free(dup3);
 	free(dup4);
 
@@ -279,7 +281,9 @@ void	ft_atoi_base_test(void)
 	res1 = ft_atoi_base("FF", "0123456789ABCDEF");
 	printf("  Input: " MAGENTA "\"FF\" " RESET "(hex) -> My Result: " YELLOW "%d" RESET " (expected 255) %s\n", res1, (res1 == 255) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("ABCD", "0123456789ABCDEF");
-	printf("  Input: " MAGENTA "\"ABCD\" " RESET "(hex) -> My Result: " YELLOW "%d" RESET " (expected 43981) %s\n\n", res1, (res1 == 43981) ? GREEN "✓" RESET : RED "✗" RESET);
+	printf("  Input: " MAGENTA "\"ABCD\" " RESET "(hex) -> My Result: " YELLOW "%d" RESET " (expected 43981) %s\n", res1, (res1 == 43981) ? GREEN "✓" RESET : RED "✗" RESET);
+	res1 = ft_atoi_base(" -1A", "0123456789ABCDEF");
+	printf("  Input: " MAGENTA "\" -1A\" " RESET "(hex) -> My Result: " YELLOW "%d" RESET " (expected -26) %s\n\n", res1, (res1 == -26) ? GREEN "✓" RESET : RED "✗" RESET);
 
 	printf(CYAN "Test 4: " RESET RED "Whitespace Handling" RESET "\n");
 	res1 = ft_atoi_base("  +42", "0123456789");
@@ -300,6 +304,8 @@ void	ft_atoi_base_test(void)
 	printf(CYAN "Test 6: " RESET RED "Invalid Input (chars not in base)" RESET "\n");
 	res1 = ft_atoi_base("42F", "0123456789");
 	printf("  Input: " MAGENTA "\"42F\" " RESET "in decimal -> My Result: " YELLOW "%d" RESET " (expected 42) %s\n", res1, (res1 == 42) ? GREEN "✓" RESET : RED "✗" RESET);
+	res1 = ft_atoi_base("529", "01234567");
+	printf("  Input: " MAGENTA "\"529\" " RESET "in octal -> My Result: " YELLOW "%d" RESET " (expected 42) %s\n", res1, (res1 == 42) ? GREEN "✓" RESET : RED "✗" RESET);
 	res1 = ft_atoi_base("", "0123456789");
 	printf("  Input: " MAGENTA "empty string " RESET "-> My Result: " YELLOW "%d" RESET " (expected 0) %s\n\n", res1, (res1 == 0) ? GREEN "✓" RESET : RED "✗" RESET);
 }

@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:24:34 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 17:55:00 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/20 23:12:24 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -68,6 +68,7 @@
 ;*****************************************************************************
 ; int	ft_atoi_base(char *str, char *base);
 ;
+;
 ; 			type		size		name		register 
 ; argument	char*		8(ptr)		str			rdi
 ; argument	char*		8(ptr)		base		rsi
@@ -78,8 +79,11 @@
 ; variable	int			4(int)		digit		eax/ecx; temporary digit/index during conversion
 ; variable	int			4(int)		sign_flag	r15d   ; sign flag: 0 = positive, 1 = negative
 ; variable	size_t		8(long)		base_len	r14d   ; length of the base returned by check_base_valid
+;
 ; temp		required	-			rcx, rdx	temporaries used in validation and searching
 ; return	int			4(int)		(return)	rax    ; final converted integer
+;*****************************************************************************
+; r14d/r15d -> length of the base (lower 32 bits of r14, zero-extended)
 ;*****************************************************************************
 
 section .text
@@ -95,9 +99,18 @@ ft_atoi_base:
  	mov r12, rdi						; r12 = str (first argument)
  	mov r13, rsi						; r13 = base (second argument)
 
- 	;****************************************
+ 	;*************************************************************************
  	; Validate base
- 	;****************************************
+ 	;*************************************************************************
+	; Note:
+	;  - Caller preserves the `base` pointer in `r13` for later use.
+	;  - Before calling `check_base_valid`, caller moves `r13` -> `rdi`
+	;    (ABI: first argument in `rdi`).
+	;  - The helper `check_base_valid` copies that argument `rdi` -> `r12`
+	;    and uses `r12` (a callee-saved register) as its local base pointer,
+	;    keeping the caller's `r13` intact while iterating the base string.
+	;*************************************************************************
+
 
  	mov rdi, r13						; pass base as argument to check_base_valid
  	call check_base_valid				; validate base and get length
@@ -196,65 +209,73 @@ ft_atoi_base:
 		mov r12, rdi					; r12 = base pointer
 		xor ebx, ebx					; rbx = character counter (length)
 
-	.count_loop:
-		movzx eax, BYTE [r12 + rbx]		; load character at base[rbx]
-		test al, al						; check if null terminator
-		jz .check_len					; if end of base, check minimum length
+		.count_loop:
+			movzx eax, BYTE [r12 + rbx]		; load character at base[rbx]
+			test al, al						; check if null terminator
+			jz .check_len					; if end of base, check minimum length
 
-		;************************************
-		; Check for +, -, whitespace
-		;************************************
+			;**************************************
+			; Check for +, -, whitespace, tabs, etc
+			;**************************************
 
-		cmp al, '+'						; check for plus sign
-		je .invalid						; invalid: plus in base
-		cmp al, '-'						; check for minus sign
-		je .invalid						; invalid: minus in base
-		cmp al, ' '						; check for space
-		je .invalid						; invalid: space in base
-		cmp al, 9						; check for tab (ASCII 9)
-		je .invalid						; invalid: tab in base
-		cmp al, 10						; check for newline (ASCII 10)
-		je .invalid						; invalid: newline in base
-		cmp al, 11						; check for vertical tab (ASCII 11)
-		je .invalid						; invalid: vertical tab in base
-		cmp al, 12						; check for form feed (ASCII 12)
-		je .invalid						; invalid: form feed in base
-		cmp al, 13						; check for carriage return (ASCII 13)
-		je .invalid						; invalid: carriage return in base
+			cmp al, '+'						; check for plus sign
+			je .invalid						; invalid: plus in base
+			cmp al, '-'						; check for minus sign
+			je .invalid						; invalid: minus in base
+			cmp al, ' '						; check for space
+			je .invalid						; invalid: space in base
+			cmp al, 9						; check for tab (ASCII 9)
+			je .invalid						; invalid: tab in base
+			cmp al, 10						; check for newline (ASCII 10)
+			je .invalid						; invalid: newline in base
+			cmp al, 11						; check for vertical tab (ASCII 11)
+			je .invalid						; invalid: vertical tab in base
+			cmp al, 12						; check for form feed (ASCII 12)
+			je .invalid						; invalid: form feed in base
+			cmp al, 13						; check for carriage return (ASCII 13)
+			je .invalid						; invalid: carriage return in base
 
-		;************************************
-		; Check for duplicates
-		;************************************
+			;************************************
+			; Check for duplicates
+			;************************************
 
-		mov rcx, rbx					; rcx = current index
-		inc rcx							; start checking from next character
-		
-	.dup_loop:
-		movzx edx, BYTE [r12 + rcx]		; load next character
-		test dl, dl						; check if null terminator
-		jz .no_dup						; no duplicate found
-		cmp al, dl						; compare current char with next
-		je .invalid						; duplicate found: invalid
-		inc rcx							; move to next character
-		jmp .dup_loop					; continue checking for duplicates
+			mov rcx, rbx					; rcx = current index
+			inc rcx							; start checking from next character
+			
+			.dup_loop:
+				movzx edx, BYTE [r12 + rcx]		; load next character
+				test dl, dl						; check if null terminator
+				jz .no_dup						; no duplicate found
+				cmp al, dl						; compare current char with next
+				je .invalid						; duplicate found: invalid
+				inc rcx							; move to next character
+				jmp .dup_loop					; continue checking for duplicates
 
-	.no_dup:
-		inc rbx							; increment character counter
-		jmp .count_loop					; continue to next character
+			.no_dup:
+				inc rbx							; increment character counter
+				jmp .count_loop					; continue to next character
 
-	.check_len:
-		cmp rbx, 2						; check if base length >= 2
-		jl .invalid						; if length < 2, invalid base
-		mov rax, rbx					; return base length
-		pop r12							; restore r12
-		pop rbx							; restore rbx
-		ret								; return with length in eax
+			;************************************
+			; Check for lenght >=2
+			;************************************
 
-	.invalid:
-		xor eax, eax					; return 0 (invalid base)
-		pop r12							; restore r12
-		pop rbx							; restore rbx
-		ret								; return with 0 in eax
+			.check_len:
+				cmp rbx, 2						; check if base length >= 2
+				jl .invalid						; if length < 2, invalid base
+				mov rax, rbx					; return base length
+				pop r12							; restore r12
+				pop rbx							; restore rbx
+				ret								; return with length in eax
+
+			;************************************
+			; Invalid
+			;************************************
+
+			.invalid:
+				xor eax, eax					; return 0 (invalid base)
+				pop r12							; restore r12
+				pop rbx							; restore rbx
+				ret								; return with 0 in eax
 
 	;****************************************
 	; Helper: skip whitespace
