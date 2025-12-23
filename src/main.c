@@ -6,7 +6,7 @@
 /*   By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/14 20:20:39 by rdel-olm          #+#    #+#             */
-/*   Updated: 2025/12/21 19:15:27 by rdel-olm         ###   ########.fr       */
+/*   Updated: 2025/12/24 00:37:20 by rdel-olm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,7 +341,7 @@ void	ft_list_push_front_test(void)
 	printf("Initial list: " CYAN "NULL\n" RESET);
 
 	ft_list_push_front(&list, &data1);
-	printf("After push(" RED "42" RESET "): list points to node with data " GREEN "✓\n" RESET);
+	printf("After push(" RED "42" RESET "): list points to node with data\n");
 	printf("  node->data = " YELLOW "%d " RESET "(expected 42) %s\n",
 		(list ? *(int *)list->data : 0),
 		(list && *(int *)list->data == 42) ? GREEN "✓" RESET : RED "✗" RESET);
@@ -382,9 +382,9 @@ void	ft_list_push_front_test(void)
 void	ft_list_size_test(void)
 {
 	t_list	*list;
-	int		data1 = 1;
-	int		data2 = 2;
-	int		data3 = 3;
+	int		data1 = 42;
+	int		data2 = 84;
+	int		data3 = 126;
 	int		size;
 
 	printf(BLUE "========================\n");
@@ -402,6 +402,7 @@ void	ft_list_size_test(void)
 	ft_list_push_front(&list, &data2);
 	size = ft_list_size(list);
 	printf("After adding " CYAN "2 " RESET "nodes: size = " GREEN "%d " RESET "(expected 2) %s\n", size, (size == 2) ? GREEN "✓" RESET : RED "✗" RESET);
+	
 	ft_list_push_front(&list, &data3);
 	size = ft_list_size(list);
 	printf("After adding " CYAN "3 " RESET "nodes: size = " GREEN "%d " RESET "(expected 3) %s\n\n", size, (size == 3) ? GREEN "✓" RESET : RED "✗" RESET);
@@ -506,7 +507,10 @@ void	ft_list_remove_if_test(void)
 	if (list != NULL)
 	{
 		printf("  First node value: " CYAN "%d " RESET "(expected 10) %s\n", *(int *)list->data, (*(int *)list->data == 10) ? GREEN "✓" RESET : RED "✗" RESET);
-		printf("  Next node: " CYAN "%s" RESET " %s\n", (list->next == NULL) ? "NULL" : "NOT NULL", (list->next == NULL) ? GREEN "✓" RESET : RED "✗" RESET);
+		if (list && list->next)
+			printf("  Next node value: " YELLOW "%d" RESET " %s\n", *(int *)list->next->data, GREEN "✓" RESET);
+		else
+    		printf("  Next node: " CYAN "NULL" RESET " %s\n", GREEN "✓" RESET);
 		printf("  List size: " CYAN "%d " RESET "(expected 1) %s\n\n", ft_list_size(list), (ft_list_size(list) == 1) ? GREEN "✓" RESET : RED "✗" RESET);
 	}
 

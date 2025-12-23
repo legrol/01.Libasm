@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:26:42 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/21 13:46:16 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/21 22:17:00 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,7 +66,7 @@
 ; variable	t_list*		8(ptr)		new_node	rax    ; temporary result from malloc (also used for loads/stores)
 ; variable	t_list*		8(ptr)		temp		rcx    ; temporary new_node pointer while initializing
 ; variable	void*		8(ptr)		data_reg	rbx    ; saved data pointer (callee-saved - stored/restored)
-; variable	 t_list**	8(ptr)		head_ptr	r12    ; saved begin_list pointer (callee-saved - stored/restored)
+; variable	t_list**	8(ptr)		head_ptr	r12    ; saved begin_list pointer (callee-saved - stored/restored)
 ; temp		temporaries	-			rdx, rcx	used briefly if needed (rcx used above)
 ; return	void		-			-			(no return value)
 ;*****************************************************************************

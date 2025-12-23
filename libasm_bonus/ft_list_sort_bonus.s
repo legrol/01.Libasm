@@ -6,81 +6,91 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 11:27:00 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 18:05:31 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/23 20:57:51 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 ; ****************************************************************************
-;                                                                             
-;   void ft_list_sort(t_list **begin_list, int (*cmp)());                     
-;                                                                             
-;   Sorts the linked list in ascending order using a comparison function.     
-;                                                                             
-;   - Uses bubble sort algorithm.                                              
-;   - Calls cmp(node1->data, node2->data) to compare elements.                
-;   - Swaps nodes if comparison returns positive value (out of order).        
-;   - Continues until no more swaps are needed (list is sorted).              
-;   - Updates begin_list if the first node changes position.                  
-;                                                                             
-;   t_list structure:                                                         
-;     struct s_list {                                                         
-;         void *data;      (offset 0, 8 bytes)                                
-;         struct s_list *next; (offset 8, 8 bytes)                            
-;     } (total size: 16 bytes)                                                
-;                                                                             
-;   Comparison function:                                                       
-;     int (*cmp)(void *a, void *b)                                            
-;       Returns: < 0 if a < b (sorted)                                        
-;       Returns: = 0 if a == b (sorted)                                        
-;       Returns: > 0 if a > b (swap needed)                                    
-;                                                                             
-;   Algorithm (Bubble Sort):                                                  
-;     swapped = 1                                                              
-;     while (swapped):                                                        
-;         swapped = 0                                                         
-;         current = *begin_list                                                
-;         while (current && current->next):                                    
-;             if (cmp(current->data, current->next->data) > 0):               
-;                 swap nodes                                                 
-;                 swapped = 1                                                 
-;             else:                                                            
-;                 current = current->next                                      
-;                                                                             
-;   Return value:                                                              
-;     void (no return value)                                                  
-;                                                                             
-;   C equivalent:                                                              
-;                                                                             
-;   void ft_list_sort(t_list **begin_list, int (*cmp)())                      
-;   {                                                                         
-;       int swapped;                                                           
-;       t_list *current;                                                       
-;       t_list *temp;                                                         
-;                                                                             
-;       swapped = 1;                                                           
-;       while (swapped)                                                        
-;       {                                                                     
-;           swapped = 0;                                                       
-;           current = *begin_list;                                             
-;           while (current && current->next)                                  
-;           {                                                                 
-;               if (cmp(current->data, current->next->data) > 0)              
-;               {                                                              
-;                   temp = current->next;                                      
-;                   current->next = temp->next;                                
-;                   temp->next = current;                                      
-;                   if (current == *begin_list)                                
-;                       *begin_list = temp;                                    
-;                   else                                                       
-;                       prev->next = temp;                                    
-;                   swapped = 1;                                               
-;               }                                                              
-;               else                                                           
-;                   current = current->next;                                  
-;           }                                                                 
-;       }                                                                     
-;   }                                                                         
-;                                                                             
+;
+;   void ft_list_sort(t_list **begin_list, int (*cmp)());
+;
+;   Sorts the linked list in ascending order using a comparison function.
+;
+;   Implementation details:
+;   - Uses a bubble sort algorithm.
+;   - Iterates repeatedly over the list until no swaps occur.
+;   - Compares adjacent elements using the comparison function `cmp`.
+;   - If cmp(current->data, next->data) > 0, the elements are out of order.
+;   - Instead of rearranging nodes, this implementation swaps the `data`
+;     pointers stored inside the nodes.
+;
+;   Important notes:
+;   - Nodes themselves are never moved or relinked.
+;   - Only the `data` fields (offset 0 of each node) are exchanged.
+;   - The structure of the list (`next` pointers) remains unchanged.
+;   - As a consequence, `begin_list` never needs to be updated.
+;
+;   t_list structure:
+;     struct s_list {
+;         void *data;              ; offset 0 (8 bytes)
+;         struct s_list *next;     ; offset 8 (8 bytes)
+;     };
+;
+;   Comparison function:
+;     int (*cmp)(void *a, void *b)
+;       Returns:
+;         < 0  if a < b   (already in correct order)
+;         = 0  if a == b  (already in correct order)
+;         > 0  if a > b   (swap required)
+;
+;   Algorithm (Bubble Sort, data swap version):
+;
+;     do {
+;         swapped = 0;
+;         current = head;
+;
+;         while (current != NULL && current->next != NULL) {
+;             if (cmp(current->data, current->next->data) > 0) {
+;                 swap(current->data, current->next->data);
+;                 swapped = 1;
+;             }
+;             current = current->next;
+;         }
+;     } while (swapped);
+;
+;   Return value:
+;     void
+;
+;
+; 	C equivalent:
+;
+;   void ft_list_sort(t_list **begin_list, int (*cmp)(void *, void *))
+;   {
+;       int     swapped;
+;       t_list  *current;
+;   
+;       if (!begin_list || !*begin_list)
+;           return;
+;   
+;       do {
+;           swapped = 0;
+;           current = *begin_list;
+;   
+;           while (current && current->next)
+;           {
+;               if (cmp(current->data, current->next->data) > 0)
+;               {
+;                   void *tmp = current->data;
+;                   current->data = current->next->data;
+;                   current->next->data = tmp;
+;   
+;                   swapped = 1;
+;               }
+;               current = current->next;
+;           }
+;       } while (swapped);
+;   }
+;
 ; ****************************************************************************
 
 ; ****************************************************************************
@@ -106,7 +116,8 @@
 ; argument	int(*)()	8(ptr)		cmp			rsi    ; comparison function pointer
 ;
 ; variable	t_list*		8(ptr)		head		r12    ; head = *begin_list (saved)
-; variable	t_list*		8(ptr)		current		r15    ; current node pointer (iterates)
+; variable	int(*)()	8(ptr)		cmp_fn		r13    ; comparison function pointer (saved from rsi)
+; variable	_list*		8(ptr)		current		r15    ; current node pointer (iterates)
 ; variable	t_list*		8(ptr)		next		rbx    ; next node pointer (temporary, callee-saved)
 ; variable	int			4(int)		swapped		r14d   ; swap flag (0/1)
 ; temp		int			4(int)		cmp_res		eax    ; result returned by cmp
@@ -131,9 +142,9 @@ ft_list_sort:
  	test r12, r12							; check if head is NULL
  	jz .done								; if empty list, return
 
- 	;************************************************
- 	; Outer loop: repeat until no swaps occur
- 	;************************************************
+ 	;******************************************************
+ 	; Outer loop: repeat until no swaps occur (bubble sort)
+ 	;******************************************************
 
  	.outer_loop:
  		xor r14, r14						; swapped = 0

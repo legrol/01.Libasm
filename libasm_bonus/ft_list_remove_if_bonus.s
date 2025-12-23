@@ -6,7 +6,7 @@
 #    By: rdel-olm <rdel-olm@student.42malaga.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/17 13:35:00 by rdel-olm          #+#    #+#              #
-#    Updated: 2025/12/19 18:29:09 by rdel-olm         ###   ########.fr        #
+#    Updated: 2025/12/23 21:46:59 by rdel-olm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -108,8 +108,9 @@
 ; variable	t_list*		8(ptr)		next		r14    ; temporary next pointer
 ; variable	void*		8(ptr)		free_fn		r15    ; saved free_fct pointer (preserved)
 ; temp		int			4(int)		cmp_res		eax    ; result returned by cmp
-; temp		stack		-			saved_args	[rsp]  ; saved parameters at rsp+0..+24
-; saved		rbx			8			-			rbx    ; callee-saved scratch (preserved)
+; temp		stack		-			saved_args	[rsp]  ; saved parameters stored at [rsp] after `sub rsp,40`
+; saved		regs		-			rbx, r12, r13, r14, r15	; callee-saved registers preserved by this function
+; saved    	stack    	40    		-			rsp    ; stack space reserved by this function (sub rsp,40)
 ; return	void		-			-			-
 ; ****************************************************************************
                                                                            
@@ -118,25 +119,24 @@
 ;**************************************************************************
 
 section .text
-global ft_list_remove_if			; make ft_list_sort visible to the linker
-extern free							; external libc free function
+global ft_list_remove_if				; make ft_list_remove_if visible to the linker
 
 ; ****************************************************************************
 ; This file calls `free_wrapper` (assembly) which forwards to libc `free`
 ; via the PLT. The wrapper is implemented in `utils/malloc_wrapper.S` and is
 ; assembled with gcc so PLT/GOT relocations are emitted correctly for PIE.
 ; ****************************************************************************
-extern free_wrapper					; wrapper implemented in utils/malloc_wrapper.S
+extern free_wrapper						; wrapper implemented in utils/malloc_wrapper.S
 
 ft_list_remove_if:
  	;********************************
  	; Save callee-saved registers
  	;********************************
- 	push rbx						; Save rbx on stack (callee-saved)
- 	push r12						; Save r12: current node pointer
- 	push r13						; Save r13: previous node pointer
- 	push r14						; Save r14: temporary/next pointer
- 	push r15						; Save r15: free_fct pointer (easier access)
+ 	push rbx							; Save rbx on stack (callee-saved)
+ 	push r12							; Save r12: current node pointer
+ 	push r13							; Save r13: previous node pointer
+ 	push r14							; Save r14: temporary/next pointer
+ 	push r15							; Save r15: free_fct pointer (easier access)
 
  	;**********************************************
  	; Parameter setup
@@ -146,114 +146,114 @@ ft_list_remove_if:
  	; rcx = free_fct function pointer
  	;**********************************************
 
- 	sub rsp, 40						; Allocate stack space to save parameters safely
- 	mov [rsp + 0], rdi				; Save **begin_list
- 	mov [rsp + 8], rsi				; Save *data_ref
- 	mov [rsp + 16], rdx				; Save cmp function pointer
- 	mov [rsp + 24], rcx				; Save free_fct function pointer
- 	mov r15, rcx					; Save free_fct in r15 for later use
- 	mov r12, [rdi]					; Load first node into r12 (current = *begin_list)
- 	xor r13, r13					; Initialize r13 to 0 (previous = NULL, we're at head)
+ 	sub rsp, 40							; Allocate stack space to save parameters safely
+ 	mov [rsp + 0], rdi					; Save **begin_list
+ 	mov [rsp + 8], rsi					; Save *data_ref
+ 	mov [rsp + 16], rdx					; Save cmp function pointer
+ 	mov [rsp + 24], rcx					; Save free_fct function pointer
+ 	mov r15, rcx						; Save free_fct in r15 for later use
+ 	mov r12, [rdi]						; Load first node into r12 (current = *begin_list)
+ 	xor r13, r13						; Initialize r13 to 0 (previous = NULL, we're at head)
 
-.loop_start:
- 	test r12, r12					; Check if current node is NULL
- 	jz .loop_end					; If NULL, exit loop
+	.loop_start:
+	 	test r12, r12					; Check if current node is NULL
+	 	jz .loop_end					; If NULL, exit loop
 
- 	;*******************************************************
- 	; Call cmp function to compare node->data with data_ref
- 	;*******************************************************
+	 	;*******************************************************
+	 	; Call cmp function to compare node->data with data_ref
+	 	;*******************************************************
 
- 	mov rdi, [r12 + 0]				; Load current->data into rdi (first parameter for cmp)
- 	mov rsi, [rsp + 8]				; Load data_ref into rsi (second parameter)
- 	mov rax, [rsp + 16]				; Load cmp function pointer
- 	call rax						; Call (*cmp)(current->data, data_ref)
+	 	mov rdi, [r12 + 0]				; Load current->data into rdi (first parameter for cmp)
+	 	mov rsi, [rsp + 8]				; Load data_ref into rsi (second parameter)
+	 	mov rax, [rsp + 16]				; Load cmp function pointer
+	 	call rax						; Call (*cmp)(current->data, data_ref)
 
- 	;***************************************
- 	; Check if cmp returned 0 (match found)
- 	;***************************************
+	 	;***************************************
+	 	; Check if cmp returned 0 (match found)
+	 	;***************************************
 
- 	test eax, eax					; Test if comparison result is 0
- 	jnz .no_match					; If not 0, skip removal and move to next
+	 	test eax, eax					; Test if comparison result is 0
+	 	jnz .no_match					; If not 0, skip removal and move to next
 
- 	;*******************************************
- 	; MATCH FOUND: Remove this node
- 	; Call free_fct(current->data) to free data
- 	;*******************************************
+	 	;*******************************************
+	 	; MATCH FOUND: Remove this node
+	 	; Call free_fct(current->data) to free data
+	 	;*******************************************
 
- 	mov rdi, [r12 + 0]				; Load current->data
- 	mov rax, r15					; Load free_fct function pointer
- 	call rax						; Call (*free_fct)(current->data)
-
- 	;***************************************
- 	; Handle node unlinking and freeing
- 	;***************************************
-
- 	mov r14, [r12 + 8]				; Load current->next into r14 (next node)
-
- 	test r13, r13					; Check if previous is NULL (current is first node)
- 	jnz .not_first_node				; If not NULL, it's not the first node
-
- 	;***********************************************
- 	; Current is the first node: update *begin_list
- 	;***********************************************
-
- 	mov rdi, [rsp + 0]				; Load **begin_list
- 	mov [rdi], r14					; Update *begin_list to point to next node
- 	jmp .free_current_node			; Jump to free the current node
-
-.not_first_node:
- 	;******************************************************
- 	; Current is not the first node: update previous->next
- 	;******************************************************
-
- 	mov [r13 + 8], r14				; Set previous->next = current->next (unlink current)
-
-.free_current_node:
- 	;***************************************
- 	; Free the node structure itself
- 	;***************************************
-
- 	mov rdi, r12					; Load current node pointer into rdi (free parameter)
-
-	;********************************************
-	; call free via wrapper for PIE-friendliness
-	;********************************************
-	call free_wrapper				; Call free(current) via wrapper
-
- 	;*********************************************
- 	; Move to next node without updating previous
- 	;*********************************************
-
- 	mov r12, r14					; Set current = next node
- 	jmp .loop_start					; Continue loop (previous stays same)
-
-.no_match:
- 	;***************************************
- 	; No match: move to next node normally
- 	;***************************************
-
- 	mov r13, r12					; Save current as previous
- 	mov r12, [r12 + 8]				; Move to next node (current = current->next)
- 	jmp .loop_start					; Continue loop
-
-.loop_end:
- 	;***************************************
- 	; Clean up allocated stack space
- 	;***************************************
-
- 	add rsp, 40						; Deallocate stack space
-
+	 	mov rdi, [r12 + 0]				; Load current->data
+	 	mov rax, r15					; Load free_fct function pointer
+	 	call rax						; Call (*free_fct)(current->data)
+	
+	 	;***************************************
+	 	; Handle node unlinking and freeing
+	 	;***************************************
+	
+	 	mov r14, [r12 + 8]				; Load current->next into r14 (next node)
+	
+	 	test r13, r13					; Check if previous is NULL (current is first node)
+	 	jnz .not_first_node				; If not NULL, it's not the first node
+	
+	 	;***********************************************
+	 	; Current is the first node: update *begin_list
+	 	;***********************************************
+	
+	 	mov rdi, [rsp + 0]				; Load **begin_list
+	 	mov [rdi], r14					; Update *begin_list to point to next node
+	 	jmp .free_current_node			; Jump to free the current node
+	
+	.not_first_node:
+	 	;******************************************************
+	 	; Current is not the first node: update previous->next
+	 	;******************************************************
+	
+	 	mov [r13 + 8], r14				; Set previous->next = current->next (unlink current)
+	
+	.free_current_node:
+	 	;***************************************
+	 	; Free the node structure itself
+	 	;***************************************
+	
+	 	mov rdi, r12					; Load current node pointer into rdi (free parameter)
+	
+		;********************************************
+		; call free via wrapper for PIE-friendliness
+		;********************************************
+		call free_wrapper				; Call free(current) via wrapper
+	
+	 	;*********************************************
+	 	; Move to next node without updating previous
+	 	;*********************************************
+	
+	 	mov r12, r14					; Set current = next node
+	 	jmp .loop_start					; Continue loop (previous stays same)
+	
+	.no_match:
+	 	;***************************************
+	 	; No match: move to next node normally
+	 	;***************************************
+	
+	 	mov r13, r12					; Save current as previous
+	 	mov r12, [r12 + 8]				; Move to next node (current = current->next)
+	 	jmp .loop_start					; Continue loop
+	
+	.loop_end:
+	 	;***************************************
+	 	; Clean up allocated stack space
+	 	;***************************************
+	
+	 	add rsp, 40						; Deallocate stack space
+	
  	;***************************************
  	; Restore callee-saved registers
  	;***************************************
- 	 	
- 	pop r15							; Restore r15
- 	pop r14							; Restore r14
- 	pop r13							; Restore r13
- 	pop r12							; Restore r12
- 	pop rbx							; Restore rbx
 
- 	ret								; Return (void function)
+ 	pop r15								; Restore r15
+ 	pop r14								; Restore r14
+ 	pop r13								; Restore r13
+ 	pop r12								; Restore r12
+ 	pop rbx								; Restore rbx
+
+ 	ret									; Return (void function)
 
 ; ****************************************************************************
 ; Stack execution protection
