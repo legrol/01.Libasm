@@ -468,7 +468,7 @@ int	ft_compare_remove(void *a, void *b)
 	return (ia == ib ? 0 : 1);
 }
 
-void	ft_free_int(void *ptr)
+void	ft_free_fct(void *ptr)
 {
 	(void)ptr;  /* No operation needed for stack integers */
 }
@@ -501,7 +501,7 @@ void	ft_list_remove_if_test(void)
 		ft_list_size(list));
 	printf("  Removing all nodes with value " YELLOW "42" RESET "\n\n");
 
-	ft_list_remove_if(&list, &remove_val, &ft_compare_remove, &ft_free_int);
+	ft_list_remove_if(&list, &remove_val, &ft_compare_remove, &ft_free_fct);
 
 	printf("After removing value " YELLOW "42" RESET ": " RED "10 -> NULL\n" RESET);
 	if (list != NULL)
