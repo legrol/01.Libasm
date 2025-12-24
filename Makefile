@@ -194,12 +194,14 @@ clean:
 	@echo ""
 	@echo "$(YELLOW)Removing object files ...$(DEF_COLOR)"
 	@${RM} -r ${OBJ_DIR}
+	@${RM} *.out others/*.out
 	@echo "$(RED)Object files removed $(DEF_COLOR)"
 	@echo ""
 
 fclean:	clean
 	@echo "$(YELLOW)Removing binaries ...$(DEF_COLOR)"
 	@${RM} ${NAME}
+	@${RM} test *.out others/*.out
 	@echo "$(RED)Binaries removed $(DEF_COLOR)"
 	@echo ""
 
