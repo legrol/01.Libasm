@@ -5,6 +5,12 @@ of C library functions in x86_64 assembly (NASM, Intel syntax) and provide a
 static library `libasm.a` plus a test harness that demonstrates the
 functions' behavior.
 
+See also:
+
+- `libasm/README.md` — details about the mandatory functions implemented in
+  NASM and how to build/test them.
+- `libasm_bonus/README.md` — details about bonus functions and list utilities.
+
 Overview
 --------
 - Mandatory part: implement the following functions in 64-bit NASM `.s` files:
@@ -23,12 +29,16 @@ test executable that links it.
 
 Repository layout
 -----------------
-- `libasm/` 		— mandatory NASM `.s` sources.
+- `libasm/` 		    — mandatory NASM `.s` sources.
 - `libasm_bonus/` 	— bonus NASM `.s` sources (named `*_bonus.s`).
-- `src/` 			— test harness (`main.c`) and helper assembly wrappers (`*.S`).
-- `includes/` 		— header files used by tests.
-- `obj/` 			— object files generated during the build.
-- `Makefile` 		— build rules: `all`, `bonus`, `test`, `test_bonus`, `run_mandatory`,
+- `utils/` 		      — small GAS assembly wrappers (`.S`) used to call libc
+                      functions (malloc/free/errno) in a PIE-friendly way. These are compiled
+                      with `gcc` and linked only into the `test` executable — they are not
+                      archived into `libasm.a`.
+- `src/` 		        — test harness (`main.c`) and any other test-specific sources.
+- `includes/` 		  — header files used by tests.
+- `obj/` 		        — object files generated during the build.
+- `Makefile` 		    — build rules: `all`, `bonus`, `test`, `test_bonus`, `run_mandatory`,
                       `run_bonus`, `clean`, `fclean`, `re`.
 
 Build requirements
@@ -42,13 +52,13 @@ Build and test
 Recommended quick commands:
 
 ```bash
-make            	# build libasm.a with mandatory functions
-make bonus      	# assemble bonus objects and add them to libasm.a
-make test       	# build and link the test executable (mandatory tests)
-make test_bonus 	# build and link the test executable with -DINCLUDE_BONUS
+make            	  # build libasm.a with mandatory functions
+make bonus      	  # assemble bonus objects and add them to libasm.a
+make test         	# build and link the test executable (mandatory tests)
+make test_bonus   	# build and link the test executable with -DINCLUDE_BONUS
 make run_mandatory 	# build + run mandatory tests
 make run_bonus      # build + run bonus tests
-make fclean     	# remove built files and library
+make fclean       	# remove built files and library
 ```
 
 If you run `make test` or `make test_bonus` the `test` binary will be created
@@ -91,9 +101,9 @@ Audit of bonus sources (current repository state)
 -------------------------------------------------
 I ran a quick audit of the assembled objects. Summary:
 
-- `ft_atoi_base_bonus.s` 		— pure NASM, no external wrapper dependencies.
-- `ft_list_size_bonus.s` 		— pure NASM.
-- `ft_list_sort_bonus.s` 		— pure NASM (calls comparison function pointer).
+- `ft_atoi_base_bonus.s` 		    — pure NASM, no external wrapper dependencies.
+- `ft_list_size_bonus.s` 		    — pure NASM.
+- `ft_list_sort_bonus.s` 		    — pure NASM (calls comparison function pointer).
 - `ft_list_push_front_bonus.s` 	— NASM implementation; calls `malloc_wrapper`.
 - `ft_list_remove_if_bonus.s` 	— NASM implementation; calls `free_wrapper`.
 
@@ -110,25 +120,25 @@ How to prove compliance (for defense or review)
 Useful commands to show the structure and symbols during a review:
 
 ```bash
-ar -t libasm.a								# show objects inside the static library
-nm -u obj/*.o | sort -u						# list undefined symbols in object files 
-											#   (look for wrappers or libc calls)
+ar -t libasm.a								              # show objects inside the static library
+nm -u obj/*.o | sort -u						          # list undefined symbols in object files 
+											                      #   (look for wrappers or libc calls)
 readelf -r obj/ft_list_push_front_bonus.o 	# show relocations (if asked about PIE issues)
-readelf -d test | sed -n '1,120p'			# show dynamic PLT/NEEDED entries in the final executable
-nm -C libasm.a | sed -n '1,200p'			# inspect exported symbols from the library
+readelf -d test | sed -n '1,120p'			      # show dynamic PLT/NEEDED entries in the final executable
+nm -C libasm.a | sed -n '1,200p'			      # inspect exported symbols from the library
 ```
 
 What to show in the defense (short script)
 -----------------------------------------
-1. `make fclean all` 		— show `libasm.a` created.
-2. `make test` 				— build test (explain wrappers are compiled with `gcc -c`).
-3. `./test` 				— run tests showing expected outputs.
-4. `nm -A libasm.a`			— list the archive members and their symbols; use this to verify
-   							  that the mandatory functions (e.g. `ft_strlen`, `ft_read`) are 
-							  defined inside `libasm.a` and that helper wrappers (`src/*.S`) 
-							  were not accidentally archived into the static library.
+1. `make fclean all` 		  — show `libasm.a` created.
+2. `make test` 				    — build test (explain wrappers are compiled with `gcc -c`).
+3. `./test` 				      — run tests showing expected outputs.
+4. `nm -A libasm.a`			  — list the archive members and their symbols; use this to verify
+   							            that the mandatory functions (e.g. `ft_strlen`, `ft_read`) are 
+							              defined inside `libasm.a` and that helper wrappers (`src/*.S`) 
+							              were not accidentally archived into the static library.
 5. `nm -u obj/*.o` 		    — demonstrate which objects have undefined symbols and
-   							  show that wrappers are the only adapters to libc when needed.
+   							            show that wrappers are the only adapters to libc when needed.
 6. If asked about PIC vs non-PIC in NASM, explain the relocation issue and
    show a small example or convert one function live to PIC-ASM if desired.
 

@@ -5,8 +5,8 @@ funciones estándar de C en ensamblador x86_64 (NASM, sintaxis Intel) y
 proporcionar una biblioteca estática `libasm.a` junto con un programa de
 pruebas que demuestre el funcionamiento.
 
-Resumen
--------
+- Resumen
+- -------
 - Parte obligatoria: implementar en `.s` (NASM) las funciones: `ft_strlen`,
 	`ft_strcpy`, `ft_strcmp`, `ft_write`, `ft_read`, `ft_strdup`.
 - Parte bonus: funciones adicionales en `libasm_bonus/` (archivos `*_bonus.s`).
@@ -26,11 +26,15 @@ Estructura del repositorio
 --------------------------
 - `libasm/` 		— fuentes obligatorias en NASM (`*.s`).
 - `libasm_bonus/` 	— fuentes bonus en NASM (`*_bonus.s`).
-- `src/` 			— `main.c` (harness) y wrappers en ensamblador GAS (`*.S`).
+- `utils/` 			— pequeños *wrappers* en ensamblador GAS (`.S`) usados para
+						llamar funciones de libc (malloc/free/errno) de forma compatible con PIE.
+						Estos wrappers se ensamblan con `gcc -c` y solo se enlazan en el ejecutable
+						de pruebas; no se almacenan en `libasm.a`.
+- `src/` 			— `main.c` (harness) y otros archivos de test.
 - `includes/` 		— cabeceras usadas por los tests.
 - `obj/` 			— objetos generados durante la compilación.
 - `Makefile` 		— reglas: `all`, `bonus`, `test`, `test_bonus`, `run_mandatory`,
-	                  `run_bonus`, `clean`, `fclean`, `re`.
+											`run_bonus`, `clean`, `fclean`, `re`.
 
 Requisitos para compilar
 ------------------------
