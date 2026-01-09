@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./libasm.h"
+#include "../includes/libasm.h"
 
 /* ************************************************************************************************************************** */
 void	ft_strlen_test()
 {
 	printf("\n" BLUE "========================\n");
 	printf("ft_strlen test\n");
-	printf("========================\n" RESET "\n");
+	printf("=======================\n" RESET "\n");
 
 	printf("Count the characters in the string " RED "42Malaga" RESET "\n");
 	printf(CYAN "My Function returned = %lu\n" RESET, (unsigned long)ft_strlen("42Malaga"));
